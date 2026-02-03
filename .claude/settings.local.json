@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\CNobre\\\\Main\\\\Engineering\\\\Projects\\\\HouseExpenses\\\\backend''; mvn spring-boot:run\")",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\CNobre\\\\Main\\\\Engineering\\\\Projects\\\\HouseExpenses\\\\frontend''; npm start\")",
+      "Bash(powershell -Command:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(ipconfig:*)",
+      "Bash(findstr:*)",
+      "Bash(dir /s \"C:\\\\Users\\\\CNobre\\\\Main\\\\Engineering\\\\Projects\\\\HouseExpenses\\\\frontend\\\\app\")",
+      "Bash(npm start)",
+      "Bash(timeout:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill //F //PID 13112)",
+      "Bash(npx expo start:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start -- --clear)",
+      "Bash(taskkill //F //PID 7020)",
+      "Bash(npx tsc:*)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\CNobre\\\\Main\\\\Engineering\\\\Projects\\\\HouseExpenses\\\\frontend\\\\app\\\\*.tsx\")",
+      "Bash(npm ls:*)",
+      "Bash(mvn compile:*)",
+      "Bash(Get-Content \"C:\\\\Users\\\\CNobre\\\\.claude\\\\projects\\\\C--Users-CNobre-Main-Engineering-Projects-HouseExpenses\\\\e11b14fa-4b92-4159-be35-b02a8ebcaa08.jsonl\" -Tail 100)",
+      "Bash(tree:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

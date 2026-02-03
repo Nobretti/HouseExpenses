@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    # Supabase Database Connection
+    # Option 1 - Transaction Pooler (recommended): jdbc:postgresql://aws-0-[REGION].pooler.supabase.com:6543/postgres?user=postgres.[PROJECT_REF]&password=[YOUR_PASSWORD]
+    # Option 2 - Direct connection: jdbc:postgresql://db.[PROJECT_REF].supabase.co:5432/postgres
+    # prepareThreshold=0 disables prepared statement caching (required for PgBouncer/Supabase pooler)
+    url: ${DATABASE_URL:jdbc:postgresql://aws-1-eu-central-2.pooler.supabase.com:6543/postgres?prepareThreshold=0}
+    username: ${DB_USERNAME:postgres.mmqngjbdbscupgsyckic}
+    password: ${DB_PASSWORD:TLS&Home!9872026}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 30000
+      auto-commit: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  devtools:
+    restart:
+      enabled: true
+
+logging:
+  level:
+    com.houseexpenses: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-key-change-in-production-minimum-256-bits-required-here}
+    expiration: 3600000
+    refresh-expiration: 86400000
+  supabase:
+    url: ${SUPABASE_URL:https://mmqngjbdbscupgsyckic.supabase.co}
+    anon-key: ${SUPABASE_ANON_KEY:sb_publishable_mRa-W-W5ENUgMIvp5k2QtQ_P40s7c_A}
+    service-key: ${SUPABASE_SERVICE_KEY:sb_secret_dPIvj9SpX9wa1Afx210b1A_89_AQVUD}
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:8081,http://localhost:19006,exp://192.168.*.*:8081

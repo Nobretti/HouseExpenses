@@ -1,0 +1,65 @@
+Overthink and create a markdown file for an App that should have a structure for Claude Code following this specs:
+
+- Building a Mobile App and Desktop that could Manage Weekly, Montlhy and Anual Home Expenses with Main Categories and Sub Categories
+- Stablish Money Expenses Limits for Each Category and show alert messages when some category passed
+- Dashboard with some graphics showing Weekly Monthly and Anual Expenses Progress
+- Here are the Categories/SubCategories Defined in a tree format for month expenses:
+	- Casa
+		- Crédito Habitação
+		- Condominio
+		- Limpeza
+		- Água
+		- Elétrecidade / Gás
+	- Educação
+		- Escola Leonor
+		- Mestrado Joana
+	- Saude
+		- Consultas
+		- Farmácias
+	- Alimentação / Necessidades
+		- Supermercado
+		- Restaurantes
+		- Take Away
+		- Talho
+	- Seguros
+		- Seguro Gonçalo
+	- Carros
+		- Gasolina
+	- Filhos
+		- Roupa
+		- Brinquedos
+	- Operadores (Internet, Telefone, Televisão, ...)
+	- Outros
+		- Musica Leonor
+		- Piscina
+		- Via Verde 
+
+  And here are the anual expenses:
+	- Viagens / Passeios
+	- Festa de anos Leonor E Gonçalo
+	- Seguros
+		- Seguro Carro Ford Focus
+		- Seguro Carro Renault Captur
+		- Seguro de Vida
+		- Seguro Multiriscos
+		- IUC
+		- IMI
+	- Carros
+		- Inspecção
+		- Revisão
+		- Manutenção
+
+- Simple Configuration page where Categories/Sub Categories limits could be defined as other relevant options
+- User Will be able to insert each Expense individualy or in a Selection List by picking which products and money he/she
+has expend on that instant
+- Make an UI and UX Pretty and Friendly with Icons of Food, Insurance, House, etc . since this is going to be used by
+Families and should be very intuitive and easy to navigate
+- Create an authentication mechanism, for SignUp and Login with Email Verification
+- Techincal Requirements:
+	- Use Different Folders Generation for both Backend and Frontend projects
+	- The App is not complex so there is no need to make rock science strategies
+	- Use a database like supabase to store data and for authentication with email sending. 
+          The data should be stored in a relational database
+        - On UI use React Native that could be extended for both Desktop/Mobile/Tablet
+	- Use a Centralized Backend Server in Spring Boot that will do all the calculation around money,
+	  dashboard predictions and categories/subcategories management
