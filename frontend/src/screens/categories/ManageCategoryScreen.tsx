@@ -412,7 +412,9 @@ export const ManageCategoryScreen: React.FC = () => {
                   <Text style={styles.toggleHint}>
                     {newSubCategoryIsFixed
                       ? 'Exact same amount, single payment each period'
-                      : 'Variable amount, multiple payments allowed up to max budget'}
+                      : newSubCategoryIsMandatory
+                        ? 'Variable amount, multiple payments allowed up to max budget'
+                        : 'Incremental - accumulates multiple payments over time'}
                   </Text>
                 </View>
                 <Switch
@@ -501,7 +503,11 @@ export const ManageCategoryScreen: React.FC = () => {
                             <View style={styles.mandatoryBadge}>
                               <Text style={styles.mandatoryBadgeText}>Mandatory</Text>
                             </View>
-                          ) : null}
+                          ) : (
+                            <View style={styles.incrementalBadge}>
+                              <Text style={styles.incrementalBadgeText}>Incremental</Text>
+                            </View>
+                          )}
                         </View>
                         {sub.fixedAmount ? (
                           <Text style={styles.subCategoryFixedAmount}>
@@ -945,6 +951,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: colors.warning,
+  },
+  incrementalBadge: {
+    backgroundColor: `${colors.success}15`,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  incrementalBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.success,
   },
   subCategoryFixedAmount: {
     fontSize: 13,

@@ -16,4 +16,5 @@ public class DashboardDTO {
     private List<ExpenseDTO> recentExpenses;
     private List<AlertDTO> alerts;
     private Integer unreadAlertCount;
+    private List<PendingExpenseDTO> pendingExpenses;
 }

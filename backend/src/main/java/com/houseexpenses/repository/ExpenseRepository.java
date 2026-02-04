@@ -62,6 +62,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT e.subCategory.id, SUM(e.amount), COUNT(e), MAX(e.expenseDate) FROM Expense e " +
+           "WHERE e.userId = :userId AND e.subCategory IS NOT NULL " +
+           "AND e.expenseDate >= :startDate AND e.expenseDate <= :endDate " +
+           "GROUP BY e.subCategory.id")
+    List<Object[]> sumBySubCategoryGrouped(
+            @Param("userId") UUID userId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
     @Query("SELECT e.category.id, SUM(e.amount) FROM Expense e " +
            "WHERE e.userId = :userId AND e.expenseDate >= :startDate AND e.expenseDate <= :endDate " +
            "GROUP BY e.category.id")

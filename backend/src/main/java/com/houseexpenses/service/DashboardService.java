@@ -54,12 +54,13 @@ public class DashboardService {
         List<ExpenseDTO> recentExpenses = expenseRepository
                 .findByUserIdAndExpenseDateBetweenOrderByExpenseDateDesc(userId, monthRange[0], monthRange[1])
                 .stream()
-                .limit(5)
                 .map(this::mapExpenseToDTO)
                 .collect(Collectors.toList());
 
         List<AlertDTO> alerts = alertService.getUnreadAlerts(userId);
         int unreadAlertCount = (int) alertService.getUnreadCount(userId);
+
+        List<PendingExpenseDTO> pendingExpenses = computePendingExpenses(userId, referenceDate);
 
         return DashboardDTO.builder()
                 .totalSpending(totalSpending)
@@ -69,6 +70,7 @@ public class DashboardService {
                 .recentExpenses(recentExpenses)
                 .alerts(alerts)
                 .unreadAlertCount(unreadAlertCount)
+                .pendingExpenses(pendingExpenses)
                 .build();
     }
 
@@ -250,6 +252,95 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
+    private List<PendingExpenseDTO> computePendingExpenses(UUID userId, LocalDate referenceDate) {
+        List<Category> categories = categoryRepository.findByUserIdWithSubCategories(userId);
+
+        // Compute date ranges for monthly and annual
+        LocalDate[] monthRange = DateUtils.getDateRangeForPeriod(Budget.BudgetPeriod.monthly, referenceDate);
+        LocalDate[] yearRange = DateUtils.getDateRangeForPeriod(Budget.BudgetPeriod.annual, referenceDate);
+
+        // Get all subcategory payment summaries for both monthly and annual ranges in bulk
+        Map<UUID, Object[]> monthlyPayments = expenseRepository
+                .sumBySubCategoryGrouped(userId, monthRange[0], monthRange[1])
+                .stream()
+                .collect(Collectors.toMap(row -> (UUID) row[0], row -> row));
+
+        Map<UUID, Object[]> annualPayments = expenseRepository
+                .sumBySubCategoryGrouped(userId, yearRange[0], yearRange[1])
+                .stream()
+                .collect(Collectors.toMap(row -> (UUID) row[0], row -> row));
+
+        List<PendingExpenseDTO> pendingExpenses = new ArrayList<>();
+
+        for (Category category : categories) {
+            boolean isAnnual = category.getExpenseType() == Category.ExpenseType.annual;
+            Map<UUID, Object[]> relevantPayments = isAnnual ? annualPayments : monthlyPayments;
+
+            for (SubCategory subCategory : category.getSubCategories()) {
+                if (!subCategory.getIsActive()) continue;
+
+                boolean isFixed = subCategory.getFixedAmount() != null && subCategory.getFixedAmount() > 0;
+                boolean isMandatory = isFixed || Boolean.TRUE.equals(subCategory.getIsMandatory());
+
+                if (!isMandatory) continue;
+
+                // Determine expected amount
+                BigDecimal expectedAmount;
+                if (isFixed) {
+                    expectedAmount = BigDecimal.valueOf(subCategory.getFixedAmount());
+                } else {
+                    // Non-fixed mandatory: use budget limit as expected
+                    Double bl = subCategory.getBudgetLimit();
+                    expectedAmount = bl != null ? BigDecimal.valueOf(bl) : BigDecimal.ZERO;
+                }
+
+                // Skip subcategories with no expected amount
+                if (expectedAmount.compareTo(BigDecimal.ZERO) == 0) continue;
+
+                // Check payments from grouped query
+                Object[] paymentData = relevantPayments.get(subCategory.getId());
+                BigDecimal paidAmount = BigDecimal.ZERO;
+                long paymentCount = 0;
+                LocalDate lastPaidDate = null;
+
+                if (paymentData != null) {
+                    paidAmount = (BigDecimal) paymentData[1];
+                    paymentCount = (Long) paymentData[2];
+                    lastPaidDate = (LocalDate) paymentData[3];
+                }
+
+                // For fixed expenses, check if paid amount meets expected
+                // For mandatory non-fixed, check if any payment was made
+                boolean isPaid;
+                if (isFixed) {
+                    isPaid = paidAmount.compareTo(expectedAmount) >= 0;
+                } else {
+                    // Mandatory non-fixed: consider paid if any payment was made
+                    isPaid = paidAmount.compareTo(BigDecimal.ZERO) > 0;
+                }
+
+                if (isPaid) continue;
+
+                pendingExpenses.add(PendingExpenseDTO.builder()
+                        .subCategoryId(subCategory.getId())
+                        .subCategoryName(subCategory.getName())
+                        .categoryId(category.getId())
+                        .categoryName(category.getName())
+                        .categoryColor(category.getColor())
+                        .categoryExpenseType(category.getExpenseType().name())
+                        .expectedAmount(expectedAmount)
+                        .isFixed(isFixed)
+                        .isPaidThisPeriod(false)
+                        .paidAmount(paidAmount)
+                        .lastPaidDate(lastPaidDate)
+                        .paymentCount((int) paymentCount)
+                        .build());
+            }
+        }
+
+        return pendingExpenses;
+    }
+
     private ExpenseDTO mapExpenseToDTO(Expense expense) {
         return ExpenseDTO.builder()
                 .id(expense.getId())
@@ -258,6 +349,7 @@ public class DashboardService {
                         .name(expense.getCategory().getName())
                         .icon(expense.getCategory().getIcon())
                         .color(expense.getCategory().getColor())
+                        .expenseType(expense.getCategory().getExpenseType())
                         .build())
                 .subCategory(expense.getSubCategory() != null ? SubCategoryDTO.builder()
                         .id(expense.getSubCategory().getId())

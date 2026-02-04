@@ -269,13 +269,13 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
             const expectedAmount = subCategory.fixedAmount;
 
             // Check if this was paid in the previous month
+            // Parse date string directly to avoid timezone issues with new Date()
             const paidExpenses = expenses.filter((expense: any) => {
-              const expenseDate = new Date(expense.date);
-              return (
-                expense.subCategory?.id === subCategory.id &&
-                expenseDate.getMonth() === lastMonth - 1 &&
-                expenseDate.getFullYear() === lastYear
-              );
+              if (expense.subCategory?.id !== subCategory.id) return false;
+              const dateParts = String(expense.date).split('-');
+              const expMonth = parseInt(dateParts[1], 10);
+              const expYear = parseInt(dateParts[0], 10);
+              return expMonth === lastMonth && expYear === lastYear;
             });
 
             const totalPaid = paidExpenses.reduce((sum: number, exp: any) => sum + exp.amount, 0);

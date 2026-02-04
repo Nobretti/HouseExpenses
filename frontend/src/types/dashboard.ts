@@ -1,6 +1,21 @@
 import { Alert } from './budget';
 import { Expense } from './expense';
 
+export interface PendingExpense {
+  subCategoryId: string;
+  subCategoryName: string;
+  categoryId: string;
+  categoryName: string;
+  categoryColor: string;
+  categoryExpenseType: 'monthly' | 'annual';
+  expectedAmount: number;
+  isFixed: boolean;
+  isPaidThisPeriod: boolean;
+  paidAmount: number;
+  lastPaidDate?: string;
+  paymentCount: number;
+}
+
 export interface DashboardSummary {
   totalSpending: number;
   budgetLimit: number;
@@ -9,6 +24,7 @@ export interface DashboardSummary {
   recentExpenses: Expense[];
   alerts: Alert[];
   unreadAlertCount: number;
+  pendingExpenses: PendingExpense[];
 }
 
 export interface CategorySpending {
@@ -39,6 +55,7 @@ export interface MonthlyExpenseStatus {
   categoryId: string;
   categoryName: string;
   categoryColor: string;
+  categoryExpenseType?: 'monthly' | 'annual';
   expectedAmount: number; // fixedAmount if fixed, 20% of budgetLimit if not
   isFixed: boolean;
   isPaidThisMonth: boolean;

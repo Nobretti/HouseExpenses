@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,14 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../constants';
 import { useDashboardStore, useCategoryStore, useAuthStore } from '../../store';
 import { LoadingSpinner, Card } from '../../components/common';
 import { MandatoryExpensesCard, BudgetLimitCard } from '../../components/dashboard';
 import { formatCurrency } from '../../utils';
-import { MonthlyExpenseStatus, BudgetLimitStatus } from '../../types';
+import { MonthlyExpenseStatus, BudgetLimitStatus, PendingExpense } from '../../types';
 
 export const DashboardScreen: React.FC = () => {
   const router = useRouter();
@@ -68,78 +69,32 @@ export const DashboardScreen: React.FC = () => {
 
   const { categories, fetchCategories } = useCategoryStore();
   const { user } = useAuthStore();
+  const [pendingTab, setPendingTab] = useState<'monthly' | 'annual'>('monthly');
 
-  // Compute mandatory unpaid expenses from categories
-  // Only shows mandatory subcategories (fixed or isMandatory) that are unpaid
-  // Includes both monthly and annual categories
-  const monthlyExpenses = useMemo((): MonthlyExpenseStatus[] => {
-    const result: MonthlyExpenseStatus[] = [];
-    const currentMonth = selectedMonth - 1;
-    const currentYear = selectedYear;
+  // Map backend-computed pending expenses to the UI format
+  const allPendingExpenses = useMemo((): MonthlyExpenseStatus[] => {
+    if (!summary?.pendingExpenses) return [];
 
-    categories.forEach((category) => {
-      const isAnnual = category.expenseType === 'annual';
+    return summary.pendingExpenses.map((pe: PendingExpense) => ({
+      subCategoryId: pe.subCategoryId,
+      subCategoryName: pe.subCategoryName,
+      categoryId: pe.categoryId,
+      categoryName: pe.categoryName,
+      categoryColor: pe.categoryColor,
+      categoryExpenseType: pe.categoryExpenseType,
+      expectedAmount: pe.expectedAmount,
+      isFixed: pe.isFixed,
+      isPaidThisMonth: false,
+      paidAmount: pe.paidAmount > 0 ? pe.paidAmount : undefined,
+      paidDate: pe.lastPaidDate,
+      paymentCount: pe.paymentCount,
+    }));
+  }, [summary?.pendingExpenses]);
 
-      category.subCategories?.forEach((subCategory) => {
-        const isFixed = !!subCategory.fixedAmount;
-        const isMandatory = isFixed || !!subCategory.isMandatory;
-
-        // Only show mandatory subcategories
-        if (!isMandatory) return;
-
-        // For fixed expenses: use exact fixedAmount
-        // For non-fixed: use 20% of budgetLimit as expected
-        const expectedAmount = isFixed
-          ? (subCategory.fixedAmount || 0)
-          : ((subCategory.budgetLimit || 0) * 0.2);
-
-        // Skip subcategories with no budget/fixed amount set
-        if (expectedAmount === 0 && !subCategory.budgetLimit && !subCategory.fixedAmount) return;
-
-        // For annual categories, check against the full year; for monthly, check the month
-        const paidExpenses = summary?.recentExpenses.filter((expense) => {
-          const expenseDate = new Date(expense.date);
-          if (isAnnual) {
-            return (
-              expense.subCategory?.id === subCategory.id &&
-              expenseDate.getFullYear() === currentYear
-            );
-          }
-          return (
-            expense.subCategory?.id === subCategory.id &&
-            expenseDate.getMonth() === currentMonth &&
-            expenseDate.getFullYear() === currentYear
-          );
-        }) || [];
-
-        const totalPaidAmount = paidExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-        const lastPaymentDate = paidExpenses.length > 0
-          ? paidExpenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date
-          : undefined;
-
-        const isPaidThisMonth = totalPaidAmount >= expectedAmount;
-
-        // Only include unpaid items
-        if (isPaidThisMonth) return;
-
-        result.push({
-          subCategoryId: subCategory.id,
-          subCategoryName: subCategory.name,
-          categoryId: category.id,
-          categoryName: category.name,
-          categoryColor: category.color,
-          expectedAmount: isFixed ? expectedAmount : (subCategory.budgetLimit || 0), // Show full budget limit for non-fixed
-          isFixed,
-          isPaidThisMonth: false,
-          paidAmount: totalPaidAmount > 0 ? totalPaidAmount : undefined,
-          paidDate: lastPaymentDate,
-          paymentCount: paidExpenses.length,
-        });
-      });
-    });
-
-    return result;
-  }, [categories, summary?.recentExpenses, selectedMonth, selectedYear]);
+  // Filter pending expenses by the active pending tab
+  const filteredPendingExpenses = useMemo(() => {
+    return allPendingExpenses.filter(e => e.categoryExpenseType === pendingTab);
+  }, [allPendingExpenses, pendingTab]);
 
   // Compute budget limit status
   const budgetLimitStatus = useMemo((): BudgetLimitStatus | null => {
@@ -159,10 +114,13 @@ export const DashboardScreen: React.FC = () => {
     };
   }, [user?.monthlyBudgetLimit, monthlyData?.total]);
 
-  useEffect(() => {
-    refreshDashboard();
-    fetchCategories();
-  }, []);
+  // Refresh data every time this screen gains focus (e.g. after paying an expense)
+  useFocusEffect(
+    useCallback(() => {
+      refreshDashboard();
+      fetchCategories();
+    }, [])
+  );
 
   // Check for month change when categories and summary are loaded
   useEffect(() => {
@@ -319,11 +277,13 @@ export const DashboardScreen: React.FC = () => {
             <BudgetLimitCard budgetStatus={budgetLimitStatus} />
           )}
 
-          {/* Monthly Expenses Status */}
+          {/* Pending Payments */}
           <MandatoryExpensesCard
-            mandatoryExpenses={monthlyExpenses}
+            mandatoryExpenses={filteredPendingExpenses}
             onPayExpense={handlePayMonthlyExpense}
             onViewExpenses={handleViewExpenses}
+            activeTab={pendingTab}
+            onTabChange={setPendingTab}
           />
 
         </View>

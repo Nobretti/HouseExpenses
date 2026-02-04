@@ -272,7 +272,11 @@ export const CategoriesScreen: React.FC = () => {
                               <View style={styles.mandatoryBadge}>
                                 <Text style={styles.mandatoryBadgeText}>Mandatory</Text>
                               </View>
-                            ) : null}
+                            ) : (
+                              <View style={styles.incrementalBadge}>
+                                <Text style={styles.incrementalBadgeText}>Incremental</Text>
+                              </View>
+                            )}
                           </View>
                           {sub.fixedAmount ? (
                             <Text style={styles.subCategoryFixedAmount}>€{sub.fixedAmount.toFixed(2)}/mo (fixed)</Text>
@@ -432,8 +436,6 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   categoryMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginTop: 4,
   },
   subCategoryCount: {
@@ -444,7 +446,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.primary,
     fontWeight: '500',
-    marginLeft: 8,
+    marginTop: 2,
   },
   editButton: {
     padding: 8,
@@ -520,6 +522,18 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: colors.warning,
+  },
+  incrementalBadge: {
+    backgroundColor: `${colors.success}15`,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  incrementalBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.success,
   },
   bottomSpacing: {
     height: 40,

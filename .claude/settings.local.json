@@ -22,7 +22,10 @@
       "Bash(mvn compile:*)",
       "Bash(Get-Content \"C:\\\\Users\\\\CNobre\\\\.claude\\\\projects\\\\C--Users-CNobre-Main-Engineering-Projects-HouseExpenses\\\\e11b14fa-4b92-4159-be35-b02a8ebcaa08.jsonl\" -Tail 100)",
       "Bash(tree:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(node -e:*)",
+      "Bash(mvnw.cmd compile:*)",
+      "Bash(.mvnw.cmd compile:*)"
     ]
   }
 }

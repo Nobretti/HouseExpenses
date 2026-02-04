@@ -50,12 +50,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="categories"
+        name="expenses"
         options={{
-          title: 'Categories',
+          title: 'Expenses',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? 'layers' : 'layers-outline'}
+              name={focused ? 'wallet' : 'wallet-outline'}
               size={24}
               color={color}
             />
@@ -63,12 +63,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="expenses"
+        name="categories"
         options={{
-          title: 'Expenses',
+          title: 'Categories',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? 'wallet' : 'wallet-outline'}
+              name={focused ? 'layers' : 'layers-outline'}
               size={24}
               color={color}
             />

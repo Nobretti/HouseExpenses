@@ -45,6 +45,12 @@ export default function RootLayout() {
         <Stack.Screen name="manage-category" />
         <Stack.Screen name="about" />
         <Stack.Screen
+          name="expenses-filtered"
+          options={{
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen
           name="expense-filter"
           options={{
             presentation: 'modal',

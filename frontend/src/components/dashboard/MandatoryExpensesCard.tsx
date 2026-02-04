@@ -10,13 +10,38 @@ interface MandatoryExpensesCardProps {
   mandatoryExpenses: MonthlyExpenseStatus[];
   onPayExpense: (expense: MonthlyExpenseStatus) => void;
   onViewExpenses?: (expense: MonthlyExpenseStatus) => void;
+  activeTab: 'monthly' | 'annual';
+  onTabChange: (tab: 'monthly' | 'annual') => void;
 }
 
 export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
   mandatoryExpenses,
   onPayExpense,
   onViewExpenses,
+  activeTab,
+  onTabChange,
 }) => {
+  const tabSelector = (
+    <View style={styles.tabsContainer}>
+      <TouchableOpacity
+        style={[styles.miniTab, activeTab === 'monthly' && styles.miniTabActive]}
+        onPress={() => onTabChange('monthly')}
+      >
+        <Text style={[styles.miniTabText, activeTab === 'monthly' && styles.miniTabTextActive]}>
+          This Month
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.miniTab, activeTab === 'annual' && styles.miniTabActive]}
+        onPress={() => onTabChange('annual')}
+      >
+        <Text style={[styles.miniTabText, activeTab === 'annual' && styles.miniTabTextActive]}>
+          This Year
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   if (mandatoryExpenses.length === 0) {
     return (
       <Card style={styles.card}>
@@ -26,6 +51,7 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
             <Text style={styles.title}>Pending Payments</Text>
           </View>
         </View>
+        {tabSelector}
         <View style={styles.allPaidContainer}>
           <Ionicons name="checkmark-done" size={32} color={colors.success} />
           <Text style={styles.allPaidText}>All caught up!</Text>
@@ -37,9 +63,6 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
 
   // Calculate total remaining amounts
   const totalRemaining = mandatoryExpenses.reduce((sum, e) => {
-    if (e.isFixed) {
-      return sum + e.expectedAmount - (e.paidAmount || 0);
-    }
     return sum + e.expectedAmount - (e.paidAmount || 0);
   }, 0);
 
@@ -60,6 +83,8 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
           </Text>
         </View>
       </View>
+
+      {tabSelector}
 
       {/* Total Remaining Summary */}
       <View style={styles.totalSummary}>
@@ -164,7 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   titleRow: {
     flexDirection: 'row',
@@ -186,6 +211,32 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.warning,
+  },
+  // Mini tabs
+  tabsContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.background,
+    borderRadius: 10,
+    padding: 3,
+    marginBottom: 16,
+  },
+  miniTab: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  miniTabActive: {
+    backgroundColor: colors.primary,
+  },
+  miniTabText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  miniTabTextActive: {
+    color: colors.surface,
+    fontWeight: '600',
   },
   allPaidContainer: {
     alignItems: 'center',
