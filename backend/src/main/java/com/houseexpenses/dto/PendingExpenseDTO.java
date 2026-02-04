@@ -1,5 +1,6 @@
 package com.houseexpenses.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,8 +18,13 @@ public class PendingExpenseDTO {
     private String categoryColor;
     private String categoryExpenseType;
     private BigDecimal expectedAmount;
+
+    @JsonProperty("isFixed")
     private boolean isFixed;
+
+    @JsonProperty("isPaidThisPeriod")
     private boolean isPaidThisPeriod;
+
     private BigDecimal paidAmount;
     private LocalDate lastPaidDate;
     private int paymentCount;

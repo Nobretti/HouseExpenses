@@ -294,8 +294,8 @@ public class DashboardService {
                     expectedAmount = bl != null ? BigDecimal.valueOf(bl) : BigDecimal.ZERO;
                 }
 
-                // Skip subcategories with no expected amount
-                if (expectedAmount.compareTo(BigDecimal.ZERO) == 0) continue;
+                // For fixed expenses, skip if no amount set
+                if (isFixed && expectedAmount.compareTo(BigDecimal.ZERO) == 0) continue;
 
                 // Check payments from grouped query
                 Object[] paymentData = relevantPayments.get(subCategory.getId());
