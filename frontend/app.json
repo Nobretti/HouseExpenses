@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "scheme": "houseexpenses",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "backgroundColor": "#4A90D9",
       "resizeMode": "contain"
