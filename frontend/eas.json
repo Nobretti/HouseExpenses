@@ -4,13 +4,7 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "base": {
-      "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r26b"
-      }
-    },
     "development": {
-      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "android": {
@@ -18,14 +12,12 @@
       }
     },
     "preview": {
-      "extends": "base",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
-      "extends": "base",
       "autoIncrement": true
     }
   },

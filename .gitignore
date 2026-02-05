@@ -8,7 +8,6 @@ build/
 dist/
 target/
 *.jar
-!frontend/android/gradle/wrapper/gradle-wrapper.jar
 *.war
 *.class
 
