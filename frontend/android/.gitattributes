@@ -4,3 +4,7 @@ gradlew text eol=lf
 
 # Keep CRLF for Windows batch files
 *.bat text eol=crlf
+
+# Ensure binary files are never treated as text (prevents autocrlf corruption)
+*.jar binary
+*.keystore binary
