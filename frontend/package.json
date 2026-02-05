@@ -10,7 +10,7 @@
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
-    "eas-build-post-install": "cd android && gradle wrapper --gradle-version 8.10.2 || (mkdir -p gradle/wrapper && curl -sL -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.10.2/gradle/wrapper/gradle-wrapper.jar)"
+    "eas-build-on-success": "echo Build completed successfully"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
