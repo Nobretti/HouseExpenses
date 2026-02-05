@@ -8,8 +8,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "backgroundColor": "#4A90D9",
-      "resizeMode": "contain"
+      "backgroundColor": "#4A90D9"
     },
     "assetBundlePatterns": [
       "**/*"
