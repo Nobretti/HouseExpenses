@@ -15,6 +15,11 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://houseexpenses-production.up.railway.app/api",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://mmqngjbdbscupgsyckic.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_mRa-W-W5ENUgMIvp5k2QtQ_P40s7c_A"
       }
     },
     "production": {
