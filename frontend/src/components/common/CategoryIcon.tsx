@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { getIconName, colors } from '../../constants';
 
 interface CategoryIconProps {
@@ -26,7 +26,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
   // Provide fallbacks for undefined icon/color
   const safeIcon = icon || 'help-circle-outline';
   const safeColor = color || colors.textSecondary;
-  const iconName = getIconName(safeIcon) as keyof typeof Ionicons.glyphMap;
+  const iconName = getIconName(safeIcon);
 
   return (
     <View

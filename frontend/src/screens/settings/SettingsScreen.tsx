@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../constants';
 import { useAuthStore, useDashboardStore, useCategoryStore, useExpenseStore } from '../../store';
 import { Card, ConfirmDialog, Toast } from '../../components/common';
@@ -18,7 +18,7 @@ import { BudgetLimitModal } from '../../components/settings';
 import { formatCurrency } from '../../utils';
 
 interface SettingItemProps {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: string;
   title: string;
   subtitle?: string;
   onPress: () => void;

@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../constants';
 import { Card, LoadingSpinner, ProgressBar } from '../../components/common';
 import { useCategoryStore, useExpenseStore } from '../../store';

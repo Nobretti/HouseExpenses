@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
 import { ExpenseList } from '../../components/expenses';

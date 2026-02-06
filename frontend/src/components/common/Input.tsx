@@ -8,14 +8,14 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../constants';
 
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
-  leftIcon?: keyof typeof Ionicons.glyphMap;
-  rightIcon?: keyof typeof Ionicons.glyphMap;
+  leftIcon?: string;
+  rightIcon?: string;
   onRightIconPress?: () => void;
   containerStyle?: ViewStyle;
 }
@@ -46,7 +46,7 @@ export const Input: React.FC<InputProps> = ({
           />
         )}
         <TextInput
-          style={[styles.input, leftIcon && styles.inputWithLeftIcon]}
+          style={[styles.input, leftIcon ? styles.inputWithLeftIcon : undefined]}
           placeholderTextColor={colors.textLight}
           secureTextEntry={isPassword && !isPasswordVisible}
           {...props}

@@ -1,55 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { Stack, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as Font from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuthStore } from '../src/store';
 import { colors } from '../src/constants';
 
-// Prevent the splash screen from auto-hiding before fonts are loaded
+// Load icon font - this is required for react-native-vector-icons on Android
+Icon.loadFont();
+
+// Hide splash screen once app is ready
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { checkSession } = useAuthStore();
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  // Load Ionicons font using Font.loadAsync for better Huawei compatibility
-  useEffect(() => {
-    async function loadFonts() {
-      try {
-        await Font.loadAsync({
-          // Load from @expo/vector-icons
-          ...Ionicons.font,
-          // Also explicitly load the font file as a fallback
-          'Ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
-        });
-        setFontsLoaded(true);
-      } catch (error) {
-        console.warn('Error loading fonts:', error);
-        // Still allow app to render even if fonts fail
-        setFontsLoaded(true);
-      }
-    }
-    loadFonts();
-  }, []);
 
   useEffect(() => {
     checkSession();
+    // Hide splash screen after a brief delay to ensure fonts are loaded
+    const timer = setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <View style={{ flex: 1 }}>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
