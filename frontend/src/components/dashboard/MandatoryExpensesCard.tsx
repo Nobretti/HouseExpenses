@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { colors } from '../../constants';
 import { MonthlyExpenseStatus } from '../../types';
 import { formatCurrency } from '../../utils';
@@ -47,13 +47,13 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
       <Card style={styles.card}>
         <View style={styles.header}>
           <View style={styles.titleRow}>
-            <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.title}>Pending Payments</Text>
           </View>
         </View>
         {tabSelector}
         <View style={styles.allPaidContainer}>
-          <Ionicons name="checkmark-done" size={32} color={colors.success} />
+          <Icon name="checkmark-done" size={32} color={colors.success} />
           <Text style={styles.allPaidText}>All caught up!</Text>
           <Text style={styles.allPaidHint}>No pending mandatory payments</Text>
         </View>
@@ -70,7 +70,7 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
     <Card style={styles.card}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Ionicons
+          <Icon
             name="alert-circle-outline"
             size={20}
             color={colors.warning}
@@ -133,14 +133,14 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
                   onPress={() => onViewExpenses?.(expense)}
                 >
                   <View style={styles.paidBadge}>
-                    <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                    <Icon name="checkmark-circle" size={16} color={colors.success} />
                     <Text style={styles.paidText}>
                       {expense.paidAmount ? formatCurrency(expense.paidAmount) : 'Paid'}
                       {expense.paymentCount && expense.paymentCount > 1 ? ` (${expense.paymentCount}x)` : ''}
                     </Text>
                   </View>
                   {onViewExpenses && (
-                    <Ionicons name="chevron-forward" size={14} color={colors.textSecondary} style={styles.viewIcon} />
+                    <Icon name="chevron-forward" size={14} color={colors.textSecondary} style={styles.viewIcon} />
                   )}
                 </TouchableOpacity>
               ) : expense.paidAmount && expense.paidAmount > 0 ? (
@@ -159,7 +159,7 @@ export const MandatoryExpensesCard: React.FC<MandatoryExpensesCardProps> = ({
                       style={styles.addPaymentButton}
                       onPress={() => onPayExpense(expense)}
                     >
-                      <Ionicons name="add" size={14} color={colors.surface} />
+                      <Icon name="add" size={14} color={colors.surface} />
                     </TouchableOpacity>
                   )}
                 </View>

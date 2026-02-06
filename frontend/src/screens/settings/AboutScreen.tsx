@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Card } from '../../components/common';
 
@@ -30,7 +30,7 @@ export const AboutScreen: React.FC = () => {
       <View style={[styles.headerWrapper, isWeb && isWideScreen && styles.webHeader]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>About</Text>
           <View style={styles.placeholder} />
@@ -45,7 +45,7 @@ export const AboutScreen: React.FC = () => {
         {/* App Logo & Info */}
         <View style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <Ionicons name="home" size={48} color={colors.primary} />
+            <Icon name="home" size={48} color={colors.primary} />
           </View>
           <Text style={styles.appName}>Family Expenses</Text>
           <Text style={styles.version}>Version 1.0.0</Text>
@@ -58,19 +58,19 @@ export const AboutScreen: React.FC = () => {
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Features</Text>
           <View style={styles.featureItem}>
-            <Ionicons name="wallet-outline" size={22} color={colors.primary} />
+            <Icon name="wallet-outline" size={22} color={colors.primary} />
             <Text style={styles.featureText}>Track daily expenses by category</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="pie-chart-outline" size={22} color={colors.primary} />
+            <Icon name="pie-chart-outline" size={22} color={colors.primary} />
             <Text style={styles.featureText}>Visual spending breakdown</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+            <Icon name="notifications-outline" size={22} color={colors.primary} />
             <Text style={styles.featureText}>Budget alerts and notifications</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="people-outline" size={22} color={colors.primary} />
+            <Icon name="people-outline" size={22} color={colors.primary} />
             <Text style={styles.featureText}>Family-friendly interface</Text>
           </View>
         </Card>
@@ -91,12 +91,12 @@ export const AboutScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>Legal</Text>
           <TouchableOpacity style={styles.linkItem}>
             <Text style={styles.linkText}>Privacy Policy</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.textLight} />
+            <Icon name="chevron-forward" size={20} color={colors.textLight} />
           </TouchableOpacity>
           <View style={styles.divider} />
           <TouchableOpacity style={styles.linkItem}>
             <Text style={styles.linkText}>Terms of Service</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.textLight} />
+            <Icon name="chevron-forward" size={20} color={colors.textLight} />
           </TouchableOpacity>
         </Card>
 

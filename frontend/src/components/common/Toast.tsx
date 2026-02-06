@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from './Icon';
 import { colors } from '../../constants';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -99,13 +99,13 @@ export const Toast: React.FC<ToastProps> = ({
       ]}
     >
       <View style={[styles.iconContainer, { backgroundColor: `${config.borderColor}15` }]}>
-        <Ionicons name={config.icon as any} size={22} color={config.borderColor} />
+        <Icon name={config.icon as any} size={22} color={config.borderColor} />
       </View>
       <View style={styles.content}>
         <Text style={styles.message}>{message}</Text>
       </View>
       <TouchableOpacity onPress={hideToast} style={styles.closeButton}>
-        <Ionicons name="close" size={18} color={colors.textSecondary} />
+        <Icon name="close" size={18} color={colors.textSecondary} />
       </TouchableOpacity>
     </Animated.View>
   );

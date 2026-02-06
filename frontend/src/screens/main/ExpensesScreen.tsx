@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
 import { Card, CategoryIcon, LoadingSpinner, EmptyState } from '../../components/common';
@@ -207,7 +207,7 @@ export const ExpensesScreen: React.FC = () => {
             style={styles.filterButton}
             onPress={() => router.push('/expense-filter')}
           >
-            <Ionicons name="filter-outline" size={24} color={colors.text} />
+            <Icon name="filter-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -281,7 +281,7 @@ export const ExpensesScreen: React.FC = () => {
                   activeOpacity={0.7}
                 >
                   {/* Expand/Collapse Toggle */}
-                  <Ionicons
+                  <Icon
                     name={isExpanded ? 'chevron-down' : 'chevron-forward'}
                     size={20}
                     color={hasSubCategories ? colors.textSecondary : 'transparent'}
@@ -332,7 +332,7 @@ export const ExpensesScreen: React.FC = () => {
                             <Text style={styles.subCategoryAmount}>
                               {'\u20AC'}{sub.totalAmount.toFixed(2)}
                             </Text>
-                            <Ionicons name="chevron-forward" size={16} color={colors.textLight} />
+                            <Icon name="chevron-forward" size={16} color={colors.textLight} />
                           </View>
                         </TouchableOpacity>
                         {index < group.subCategories.length - 1 && (
@@ -355,7 +355,7 @@ export const ExpensesScreen: React.FC = () => {
         style={[styles.fab, isWeb && isWideScreen && styles.webFab]}
         onPress={() => router.push('/add-expense')}
       >
-        <Ionicons name="add" size={28} color={colors.surface} />
+        <Icon name="add" size={28} color={colors.surface} />
       </TouchableOpacity>
     </SafeAreaView>
   );

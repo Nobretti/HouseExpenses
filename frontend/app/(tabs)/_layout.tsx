@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../src/components/common';
 import { colors } from '../../src/constants';
 
 export default function TabLayout() {
@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
+            <Icon
               name={focused ? 'grid' : 'grid-outline'}
               size={24}
               color={color}
@@ -54,7 +54,7 @@ export default function TabLayout() {
         options={{
           title: 'Expenses',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
+            <Icon
               name={focused ? 'wallet' : 'wallet-outline'}
               size={24}
               color={color}
@@ -67,7 +67,7 @@ export default function TabLayout() {
         options={{
           title: 'Categories',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
+            <Icon
               name={focused ? 'layers' : 'layers-outline'}
               size={24}
               color={color}
@@ -80,7 +80,7 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
+            <Icon
               name={focused ? 'settings' : 'settings-outline'}
               size={24}
               color={color}

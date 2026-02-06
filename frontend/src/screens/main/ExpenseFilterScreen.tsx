@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Button, Card } from '../../components/common';
 import { useCategoryStore } from '../../store';
@@ -42,7 +42,7 @@ export const ExpenseFilterScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="close" size={24} color={colors.text} />
+          <Icon name="close" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Filter Expenses</Text>
         <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
@@ -65,7 +65,7 @@ export const ExpenseFilterScreen: React.FC = () => {
               onPress={() => setDateRange(option.key as typeof dateRange)}
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
-              <Ionicons
+              <Icon
                 name={dateRange === option.key ? 'radio-button-on' : 'radio-button-off'}
                 size={22}
                 color={dateRange === option.key ? colors.primary : colors.textLight}
@@ -89,7 +89,7 @@ export const ExpenseFilterScreen: React.FC = () => {
                     { backgroundColor: `${category.color || colors.primary}20` },
                   ]}
                 >
-                  <Ionicons
+                  <Icon
                     name={(category.icon as any) || 'folder-outline'}
                     size={18}
                     color={category.color || colors.primary}
@@ -97,7 +97,7 @@ export const ExpenseFilterScreen: React.FC = () => {
                 </View>
                 <Text style={styles.categoryName}>{category.name}</Text>
               </View>
-              <Ionicons
+              <Icon
                 name={selectedCategories.includes(category.id) ? 'checkbox' : 'square-outline'}
                 size={22}
                 color={

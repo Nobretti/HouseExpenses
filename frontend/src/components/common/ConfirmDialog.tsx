@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from './Icon';
 import { colors } from '../../constants';
 import { Button } from './Button';
 
@@ -59,7 +59,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <TouchableWithoutFeedback>
             <View style={styles.dialog}>
               <View style={[styles.iconContainer, { backgroundColor: config.bgColor }]}>
-                <Ionicons name={config.icon as any} size={32} color={config.color} />
+                <Icon name={config.icon as any} size={32} color={config.color} />
               </View>
               <Text style={styles.title}>{title}</Text>
               <Text style={styles.message}>{message}</Text>

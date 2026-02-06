@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useDashboardStore, useCategoryStore, useAuthStore } from '../../store';
 import { LoadingSpinner, Card } from '../../components/common';
@@ -167,7 +167,7 @@ export const DashboardScreen: React.FC = () => {
         <View style={styles.header}>
           <View style={styles.dateCard}>
             <View style={styles.dateIconContainer}>
-              <Ionicons name="calendar" size={20} color={colors.primary} />
+              <Icon name="calendar" size={20} color={colors.primary} />
             </View>
             <View style={styles.dateTextContainer}>
               <Text style={styles.dateDayName}>{formattedDate.dayName}</Text>
@@ -180,7 +180,7 @@ export const DashboardScreen: React.FC = () => {
             style={styles.alertButton}
             onPress={() => router.push('/alerts')}
           >
-            <Ionicons name="notifications-outline" size={24} color={colors.text} />
+            <Icon name="notifications-outline" size={24} color={colors.text} />
             {(unreadAlertCount > 0 || unpaidAlerts.length > 0) && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>
@@ -217,7 +217,7 @@ export const DashboardScreen: React.FC = () => {
               style={[styles.periodNavButton, isFirstMonth && styles.periodNavButtonDisabled]}
               disabled={isFirstMonth}
             >
-              <Ionicons name="chevron-back" size={24} color={isFirstMonth ? colors.textLight : colors.primary} />
+              <Icon name="chevron-back" size={24} color={isFirstMonth ? colors.textLight : colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={goToCurrentMonth} style={styles.periodDisplay}>
               <Text style={styles.periodText}>{displayPeriod}</Text>
@@ -230,7 +230,7 @@ export const DashboardScreen: React.FC = () => {
               style={[styles.periodNavButton, isCurrentMonth && styles.periodNavButtonDisabled]}
               disabled={isCurrentMonth}
             >
-              <Ionicons name="chevron-forward" size={24} color={isCurrentMonth ? colors.textLight : colors.primary} />
+              <Icon name="chevron-forward" size={24} color={isCurrentMonth ? colors.textLight : colors.primary} />
             </TouchableOpacity>
           </View>
 
@@ -250,7 +250,7 @@ export const DashboardScreen: React.FC = () => {
                 <>
                   <View style={styles.spendingItem}>
                     <View style={[styles.spendingIcon, { backgroundColor: `${colors.primary}15` }]}>
-                      <Ionicons name="today-outline" size={18} color={colors.primary} />
+                      <Icon name="today-outline" size={18} color={colors.primary} />
                     </View>
                     <View style={styles.spendingItemInfo}>
                       <Text style={styles.spendingItemLabel}>This Week</Text>
@@ -262,7 +262,7 @@ export const DashboardScreen: React.FC = () => {
               )}
               <View style={styles.spendingItem}>
                 <View style={[styles.spendingIcon, { backgroundColor: `${colors.success}15` }]}>
-                  <Ionicons name="calendar-outline" size={18} color={colors.success} />
+                  <Icon name="calendar-outline" size={18} color={colors.success} />
                 </View>
                 <View style={styles.spendingItemInfo}>
                   <Text style={styles.spendingItemLabel}>{isCurrentMonth ? 'This Year' : `${selectedYear} Total`}</Text>

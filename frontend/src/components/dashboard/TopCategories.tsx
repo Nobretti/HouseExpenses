@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { CategorySpending } from '../../types';
 import { colors } from '../../constants';
 import { formatCurrency } from '../../utils';
@@ -20,7 +20,7 @@ export const TopCategories: React.FC<TopCategoriesProps> = ({
       <Card style={styles.card}>
         <Text style={styles.title}>Top Categories</Text>
         <View style={styles.emptyContainer}>
-          <Ionicons name="pie-chart-outline" size={40} color={colors.textLight} />
+          <Icon name="pie-chart-outline" size={40} color={colors.textLight} />
           <Text style={styles.emptyText}>No expenses this month</Text>
           <Text style={styles.emptySubtext}>Add your first expense to see insights</Text>
         </View>

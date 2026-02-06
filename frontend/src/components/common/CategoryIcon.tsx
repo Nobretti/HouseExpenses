@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from './Icon';
 import { getIconName, colors } from '../../constants';
 
 interface CategoryIconProps {
@@ -40,7 +40,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
         style,
       ]}
     >
-      <Ionicons name={iconName} size={dimensions.icon} color={safeColor} />
+      <Icon name={iconName} size={dimensions.icon} color={safeColor} />
     </View>
   );
 };

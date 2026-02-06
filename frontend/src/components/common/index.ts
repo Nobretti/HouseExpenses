@@ -7,3 +7,5 @@ export { EmptyState } from './EmptyState';
 export { LoadingSpinner } from './LoadingSpinner';
 export { Toast, ToastType } from './Toast';
 export { ConfirmDialog, DialogType } from './ConfirmDialog';
+export { SvgIcon } from './SvgIcon';
+export { Icon } from './Icon';

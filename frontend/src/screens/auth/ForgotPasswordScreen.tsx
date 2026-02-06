@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Button, Input } from '../../components/common';
 import { authService } from '../../services/authService';
@@ -49,7 +49,7 @@ export const ForgotPasswordScreen: React.FC = () => {
         <View style={styles.content}>
           <View style={styles.successContainer}>
             <View style={styles.successIcon}>
-              <Ionicons name="mail-outline" size={48} color={colors.primary} />
+              <Icon name="mail-outline" size={48} color={colors.primary} />
             </View>
             <Text style={styles.successTitle}>Check Your Email</Text>
             <Text style={styles.successMessage}>
@@ -73,7 +73,7 @@ export const ForgotPasswordScreen: React.FC = () => {
         style={styles.content}
       >
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         <View style={styles.header}>

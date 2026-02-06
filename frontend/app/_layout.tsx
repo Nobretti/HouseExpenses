@@ -2,12 +2,8 @@ import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { Stack, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuthStore } from '../src/store';
 import { colors } from '../src/constants';
-
-// Load icon font - this is required for react-native-vector-icons on Android
-Icon.loadFont();
 
 // Hide splash screen once app is ready
 SplashScreen.preventAutoHideAsync();

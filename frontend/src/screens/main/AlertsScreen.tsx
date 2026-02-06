@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Card, EmptyState } from '../../components/common';
 import { useDashboardStore } from '../../store';
@@ -59,7 +59,7 @@ export const AlertsScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Alerts</Text>
         <View style={styles.placeholder} />
@@ -82,7 +82,7 @@ export const AlertsScreen: React.FC = () => {
                     { backgroundColor: `${getAlertColor(alert.type)}20` },
                   ]}
                 >
-                  <Ionicons
+                  <Icon
                     name={getAlertIcon(alert.type) as any}
                     size={24}
                     color={getAlertColor(alert.type)}

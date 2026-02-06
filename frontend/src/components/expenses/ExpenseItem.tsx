@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { Expense } from '../../types';
 import { colors } from '../../constants';
 import { formatCurrency, formatDate } from '../../utils';
@@ -45,7 +45,7 @@ export const ExpenseItem: React.FC<ExpenseItemProps> = ({
         <Text style={styles.amount}>{formatCurrency(expense.amount)}</Text>
         {onDelete && (
           <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
-            <Ionicons name="trash-outline" size={18} color={colors.danger} />
+            <Icon name="trash-outline" size={18} color={colors.danger} />
           </TouchableOpacity>
         )}
       </View>

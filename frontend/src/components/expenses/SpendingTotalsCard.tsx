@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { colors } from '../../constants';
 import { formatCurrency } from '../../utils';
 import { Card } from '../common';
@@ -28,7 +28,7 @@ export const SpendingTotalsCard: React.FC<SpendingTotalsCardProps> = ({
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: `${colors.primary}15` }]}>
-            <Ionicons name="today-outline" size={18} color={colors.primary} />
+            <Icon name="today-outline" size={18} color={colors.primary} />
           </View>
           <View style={styles.statInfo}>
             <Text style={styles.statLabel}>This Week</Text>
@@ -40,7 +40,7 @@ export const SpendingTotalsCard: React.FC<SpendingTotalsCardProps> = ({
 
         <View style={styles.statItem}>
           <View style={[styles.statIcon, { backgroundColor: `${colors.success}15` }]}>
-            <Ionicons name="calendar-outline" size={18} color={colors.success} />
+            <Icon name="calendar-outline" size={18} color={colors.success} />
           </View>
           <View style={styles.statInfo}>
             <Text style={styles.statLabel}>This Year</Text>

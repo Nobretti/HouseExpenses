@@ -12,7 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useCategoryStore } from '../../store';
 import { Card, CategoryIcon, LoadingSpinner, EmptyState } from '../../components/common';
@@ -105,7 +105,7 @@ export const CategoriesScreen: React.FC = () => {
               style={styles.expandAllButton}
               onPress={toggleAllCategories}
             >
-              <Ionicons
+              <Icon
                 name={allExpanded ? 'contract-outline' : 'expand-outline'}
                 size={24}
                 color={colors.textSecondary}
@@ -115,7 +115,7 @@ export const CategoriesScreen: React.FC = () => {
               style={styles.addButton}
               onPress={() => router.push('/manage-category')}
             >
-              <Ionicons name="add-circle" size={32} color={colors.primary} />
+              <Icon name="add-circle" size={32} color={colors.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -180,7 +180,7 @@ export const CategoriesScreen: React.FC = () => {
                   onPress={() => toggleCategory(category.id)}
                   disabled={!hasSubCategories}
                 >
-                  <Ionicons
+                  <Icon
                     name={isExpanded ? 'chevron-down' : 'chevron-forward'}
                     size={20}
                     color={hasSubCategories ? colors.textSecondary : 'transparent'}
@@ -225,7 +225,7 @@ export const CategoriesScreen: React.FC = () => {
                       onPress={() => moveCategory(category.id, 'up')}
                       disabled={isFirst}
                     >
-                      <Ionicons
+                      <Icon
                         name="chevron-up"
                         size={18}
                         color={isFirst ? colors.border : colors.textSecondary}
@@ -236,7 +236,7 @@ export const CategoriesScreen: React.FC = () => {
                       onPress={() => moveCategory(category.id, 'down')}
                       disabled={isLast}
                     >
-                      <Ionicons
+                      <Icon
                         name="chevron-down"
                         size={18}
                         color={isLast ? colors.border : colors.textSecondary}
@@ -249,7 +249,7 @@ export const CategoriesScreen: React.FC = () => {
                     style={styles.editButton}
                     onPress={() => router.push({ pathname: '/manage-category', params: { id: category.id } })}
                   >
-                    <Ionicons name="create-outline" size={22} color={colors.primary} />
+                    <Icon name="create-outline" size={22} color={colors.primary} />
                   </TouchableOpacity>
                 </View>
               </View>

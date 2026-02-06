@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
 import { LoadingSpinner, Card } from '../../components/common';
@@ -71,11 +71,11 @@ export const ExpenseDetailScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Expense Details</Text>
         <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-          <Ionicons name="trash-outline" size={24} color={colors.danger} />
+          <Icon name="trash-outline" size={24} color={colors.danger} />
         </TouchableOpacity>
       </View>
 
@@ -88,7 +88,7 @@ export const ExpenseDetailScreen: React.FC = () => {
         <Card style={styles.detailsCard}>
           <View style={styles.detailRow}>
             <View style={styles.detailIcon}>
-              <Ionicons name="pricetag-outline" size={20} color={colors.primary} />
+              <Icon name="pricetag-outline" size={20} color={colors.primary} />
             </View>
             <View style={styles.detailContent}>
               <Text style={styles.detailLabel}>Category</Text>
@@ -100,7 +100,7 @@ export const ExpenseDetailScreen: React.FC = () => {
 
           <View style={styles.detailRow}>
             <View style={styles.detailIcon}>
-              <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+              <Icon name="calendar-outline" size={20} color={colors.primary} />
             </View>
             <View style={styles.detailContent}>
               <Text style={styles.detailLabel}>Date</Text>
@@ -113,7 +113,7 @@ export const ExpenseDetailScreen: React.FC = () => {
               <View style={styles.divider} />
               <View style={styles.detailRow}>
                 <View style={styles.detailIcon}>
-                  <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+                  <Icon name="document-text-outline" size={20} color={colors.primary} />
                 </View>
                 <View style={styles.detailContent}>
                   <Text style={styles.detailLabel}>Description</Text>

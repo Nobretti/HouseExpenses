@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
 import { ExpenseList } from '../../components/expenses';
@@ -111,14 +111,14 @@ export const ExpensesFilteredScreen: React.FC = () => {
       <View style={[styles.headerWrapper, isWeb && isWideScreen && styles.webHeader]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.title} numberOfLines={1}>{filterName}</Text>
           <View style={styles.placeholder} />
         </View>
 
         <View style={[styles.periodBanner, isWeb && isWideScreen && styles.webPeriodBanner]}>
-          <Ionicons name="calendar-outline" size={16} color={colors.primary} />
+          <Icon name="calendar-outline" size={16} color={colors.primary} />
           <Text style={styles.periodText}>
             {params.period === 'annual'
               ? new Date().getFullYear().toString()

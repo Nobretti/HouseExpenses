@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { colors } from '../../constants';
 import { formatCurrency } from '../../utils';
 import { Button } from '../common';
@@ -83,7 +83,7 @@ export const BudgetLimitModal: React.FC<BudgetLimitModalProps> = ({
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={colors.textSecondary} />
+              <Icon name="close" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -91,7 +91,7 @@ export const BudgetLimitModal: React.FC<BudgetLimitModalProps> = ({
 
           {isRemoving ? (
             <View style={styles.removeNotice}>
-              <Ionicons name="information-circle" size={20} color={colors.warning} />
+              <Icon name="information-circle" size={20} color={colors.warning} />
               <Text style={styles.removeNoticeText}>
                 Budget limit will be removed
               </Text>

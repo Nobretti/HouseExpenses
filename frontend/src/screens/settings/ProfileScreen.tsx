@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Button, Input, Card } from '../../components/common';
 import { useAuthStore } from '../../store';
@@ -35,7 +35,7 @@ export const ProfileScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
@@ -67,7 +67,7 @@ export const ProfileScreen: React.FC = () => {
           />
 
           <View style={styles.infoRow}>
-            <Ionicons name="mail-outline" size={20} color={colors.textSecondary} />
+            <Icon name="mail-outline" size={20} color={colors.textSecondary} />
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Email</Text>
               <Text style={styles.infoValue}>{user?.email}</Text>
@@ -75,7 +75,7 @@ export const ProfileScreen: React.FC = () => {
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons name="globe-outline" size={20} color={colors.textSecondary} />
+            <Icon name="globe-outline" size={20} color={colors.textSecondary} />
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Currency</Text>
               <Text style={styles.infoValue}>{user?.currency || 'EUR'}</Text>
@@ -83,7 +83,7 @@ export const ProfileScreen: React.FC = () => {
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={20} color={colors.textSecondary} />
+            <Icon name="location-outline" size={20} color={colors.textSecondary} />
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Locale</Text>
               <Text style={styles.infoValue}>{user?.locale || 'pt-PT'}</Text>

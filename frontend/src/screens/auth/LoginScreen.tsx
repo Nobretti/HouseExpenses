@@ -12,7 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Button, Input } from '../../components/common';
 import { useAuthStore } from '../../store';
@@ -95,7 +95,7 @@ export const LoginScreen: React.FC = () => {
           {isWeb && isWideScreen && (
             <View style={styles.brandSection}>
               <View style={styles.logoContainer}>
-                <Ionicons name="home" size={48} color={colors.primary} />
+                <Icon name="home" size={48} color={colors.primary} />
               </View>
               <Text style={styles.brandTitle}>Family Expenses</Text>
               <Text style={styles.brandSubtitle}>
@@ -108,7 +108,7 @@ export const LoginScreen: React.FC = () => {
             <View style={styles.header}>
               {!isWeb || !isWideScreen ? (
                 <View style={styles.mobileLogo}>
-                  <Ionicons name="home" size={36} color={colors.primary} />
+                  <Icon name="home" size={36} color={colors.primary} />
                 </View>
               ) : null}
               <Text style={styles.title}>Welcome Back</Text>

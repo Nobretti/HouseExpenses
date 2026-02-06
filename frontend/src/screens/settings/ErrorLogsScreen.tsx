@@ -9,7 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { errorMonitor, ErrorLog } from '../../services';
 import { Card, ConfirmDialog, Toast } from '../../components/common';
@@ -86,12 +86,12 @@ export const ErrorLogsScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Error Logs</Text>
         {logs.length > 0 && (
           <TouchableOpacity onPress={() => setShowClearDialog(true)} style={styles.clearButton}>
-            <Ionicons name="trash-outline" size={22} color={colors.danger} />
+            <Icon name="trash-outline" size={22} color={colors.danger} />
           </TouchableOpacity>
         )}
       </View>
@@ -110,7 +110,7 @@ export const ErrorLogsScreen: React.FC = () => {
       >
         {logs.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="checkmark-circle-outline" size={64} color={colors.success} />
+            <Icon name="checkmark-circle-outline" size={64} color={colors.success} />
             <Text style={styles.emptyTitle}>No Errors</Text>
             <Text style={styles.emptySubtitle}>Your app is running smoothly</Text>
           </View>
@@ -124,7 +124,7 @@ export const ErrorLogsScreen: React.FC = () => {
                   onPress={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
                 >
                   <View style={[styles.typeIcon, { backgroundColor: `${getTypeColor(log.type)}15` }]}>
-                    <Ionicons
+                    <Icon
                       name={getTypeIcon(log.type) as any}
                       size={18}
                       color={getTypeColor(log.type)}
@@ -144,7 +144,7 @@ export const ErrorLogsScreen: React.FC = () => {
                     </Text>
                     <Text style={styles.logTimestamp}>{formatDate(log.timestamp)}</Text>
                   </View>
-                  <Ionicons
+                  <Icon
                     name={expandedLogId === log.id ? 'chevron-up' : 'chevron-down'}
                     size={20}
                     color={colors.textSecondary}

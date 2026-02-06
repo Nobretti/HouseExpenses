@@ -10,7 +10,7 @@ import {
   Switch,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useCategoryStore } from '../../store';
 import { Button, Card, Toast, ConfirmDialog } from '../../components/common';
@@ -293,7 +293,7 @@ export const ManageCategoryScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
           {isEditing ? 'Edit Category' : 'New Category'}
@@ -346,7 +346,7 @@ export const ManageCategoryScreen: React.FC = () => {
               ]}
               onPress={() => setSelectedIcon(icon)}
             >
-              <Ionicons
+              <Icon
                 name={icon as any}
                 size={24}
                 color={selectedIcon === icon ? selectedColor : colors.textSecondary}
@@ -369,7 +369,7 @@ export const ManageCategoryScreen: React.FC = () => {
               onPress={() => setSelectedColor(color)}
             >
               {selectedColor === color && (
-                <Ionicons name="checkmark" size={20} color={colors.surface} />
+                <Icon name="checkmark" size={20} color={colors.surface} />
               )}
             </TouchableOpacity>
           ))}
@@ -383,7 +383,7 @@ export const ManageCategoryScreen: React.FC = () => {
               style={styles.addSubButton}
               onPress={() => setIsAddingSubCategory(true)}
             >
-              <Ionicons name="add-circle" size={28} color={colors.primary} />
+              <Icon name="add-circle" size={28} color={colors.primary} />
             </TouchableOpacity>
           </View>
 
@@ -527,13 +527,13 @@ export const ManageCategoryScreen: React.FC = () => {
                         style={styles.editSubButton}
                         onPress={() => startEditingSubCategory(sub)}
                       >
-                        <Ionicons name="create-outline" size={20} color={colors.primary} />
+                        <Icon name="create-outline" size={20} color={colors.primary} />
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.deleteSubButton}
                         onPress={() => handleDeleteSubCategory(sub)}
                       >
-                        <Ionicons name="trash-outline" size={20} color={colors.danger} />
+                        <Icon name="trash-outline" size={20} color={colors.danger} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -543,7 +543,7 @@ export const ManageCategoryScreen: React.FC = () => {
             </Card>
           ) : (
             <Card style={styles.emptySubCategories}>
-              <Ionicons name="layers-outline" size={32} color={colors.textLight} />
+              <Icon name="layers-outline" size={32} color={colors.textLight} />
               <Text style={styles.emptySubText}>No subcategories yet</Text>
               <Text style={styles.emptySubHint}>
                 Tap the + button to add subcategories
@@ -556,7 +556,7 @@ export const ManageCategoryScreen: React.FC = () => {
         <Text style={styles.label}>Preview</Text>
         <Card style={styles.previewCard}>
           <View style={[styles.previewIcon, { backgroundColor: `${selectedColor}20` }]}>
-            <Ionicons name={selectedIcon as any} size={28} color={selectedColor} />
+            <Icon name={selectedIcon as any} size={28} color={selectedColor} />
           </View>
           <Text style={styles.previewName}>{name || 'Category Name'}</Text>
           {subCategories.length > 0 && (

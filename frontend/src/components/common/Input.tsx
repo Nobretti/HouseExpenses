@@ -8,7 +8,7 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from './Icon';
 import { colors } from '../../constants';
 
 interface InputProps extends TextInputProps {
@@ -38,7 +38,7 @@ export const Input: React.FC<InputProps> = ({
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputContainer, error && styles.inputError]}>
         {leftIcon && (
-          <Ionicons
+          <Icon
             name={leftIcon}
             size={20}
             color={colors.textSecondary}
@@ -56,7 +56,7 @@ export const Input: React.FC<InputProps> = ({
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.rightIconButton}
           >
-            <Ionicons
+            <Icon
               name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
               size={20}
               color={colors.textSecondary}
@@ -69,7 +69,7 @@ export const Input: React.FC<InputProps> = ({
             style={styles.rightIconButton}
             disabled={!onRightIconPress}
           >
-            <Ionicons name={rightIcon} size={20} color={colors.textSecondary} />
+            <Icon name={rightIcon} size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>

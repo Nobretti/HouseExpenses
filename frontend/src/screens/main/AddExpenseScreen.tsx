@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore, useDashboardStore } from '../../store';
 import { Button, Card, CategoryIcon, Toast } from '../../components/common';
@@ -111,7 +111,7 @@ export const AddExpenseScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.title}>
           {hasPreset ? 'Add Monthly Expense' : 'Add Expense'}
@@ -123,7 +123,7 @@ export const AddExpenseScreen: React.FC = () => {
         {/* Preset Expense Notice */}
         {hasPreset && (
           <View style={styles.presetNotice}>
-            <Ionicons name="calendar" size={18} color={colors.primary} />
+            <Icon name="calendar" size={18} color={colors.primary} />
             <Text style={styles.presetNoticeText}>
               {isFixedExpense
                 ? `Fixed expense: ${selectedSubCategory?.name}`
@@ -149,13 +149,13 @@ export const AddExpenseScreen: React.FC = () => {
           </View>
           {isFixedExpense && (
             <View style={styles.lockedBadge}>
-              <Ionicons name="lock-closed" size={14} color={colors.textSecondary} />
+              <Icon name="lock-closed" size={14} color={colors.textSecondary} />
               <Text style={styles.lockedBadgeText}>Fixed amount</Text>
             </View>
           )}
           {hasPreset && !isFixedExpense && params.presetAmount && (
             <View style={styles.budgetHint}>
-              <Ionicons name="information-circle-outline" size={14} color={colors.primary} />
+              <Icon name="information-circle-outline" size={14} color={colors.primary} />
               <Text style={styles.budgetHintText}>
                 Budget limit: €{params.presetAmount}
               </Text>
@@ -198,7 +198,7 @@ export const AddExpenseScreen: React.FC = () => {
         {selectedCategory && selectedCategory.subCategories && selectedCategory.subCategories.length > 0 && (
           <Card style={styles.subCategoryCard}>
             <View style={styles.subCategoryHeader}>
-              <Ionicons name="pricetag-outline" size={20} color={colors.primary} />
+              <Icon name="pricetag-outline" size={20} color={colors.primary} />
               <Text style={styles.subCategorySectionTitle}>Select Subcategory</Text>
             </View>
             <Text style={styles.subCategoryHint}>
@@ -242,7 +242,7 @@ export const AddExpenseScreen: React.FC = () => {
           >
             <View style={styles.extraordinaryLeft}>
               <View style={[styles.extraordinaryIcon, isExtraordinary && styles.extraordinaryIconActive]}>
-                <Ionicons
+                <Icon
                   name="flash"
                   size={18}
                   color={isExtraordinary ? colors.surface : colors.warning}

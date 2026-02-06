@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../common';
 import { colors } from '../../constants';
 import { BudgetLimitStatus } from '../../types';
 import { formatCurrency } from '../../utils';
@@ -27,12 +27,12 @@ export const BudgetLimitCard: React.FC<BudgetLimitCardProps> = ({ budgetStatus }
     <Card style={styles.card}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Ionicons name="wallet-outline" size={20} color={statusColor} />
+          <Icon name="wallet-outline" size={20} color={statusColor} />
           <Text style={styles.title}>Budget Limit</Text>
         </View>
         {isExceeded && (
           <View style={styles.warningBadge}>
-            <Ionicons name="warning" size={14} color={colors.danger} />
+            <Icon name="warning" size={14} color={colors.danger} />
             <Text style={styles.warningText}>Exceeded</Text>
           </View>
         )}
@@ -65,7 +65,7 @@ export const BudgetLimitCard: React.FC<BudgetLimitCardProps> = ({ budgetStatus }
       </View>
 
       <View style={styles.remainingRow}>
-        <Ionicons
+        <Icon
           name={isExceeded ? 'trending-up' : 'trending-down'}
           size={16}
           color={statusColor}

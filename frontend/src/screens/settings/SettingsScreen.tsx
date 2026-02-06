@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useAuthStore, useDashboardStore, useCategoryStore, useExpenseStore } from '../../store';
 import { Card, ConfirmDialog, Toast } from '../../components/common';
@@ -34,7 +34,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
 }) => (
   <TouchableOpacity style={styles.settingItem} onPress={onPress}>
     <View style={[styles.iconContainer, danger && styles.iconContainerDanger]}>
-      <Ionicons
+      <Icon
         name={icon}
         size={20}
         color={danger ? colors.danger : colors.primary}
@@ -46,7 +46,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
       </Text>
       {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
     </View>
-    <Ionicons name="chevron-forward" size={20} color={colors.textLight} />
+    <Icon name="chevron-forward" size={20} color={colors.textLight} />
   </TouchableOpacity>
 );
 
@@ -137,7 +137,7 @@ export const SettingsScreen: React.FC = () => {
             <Text style={styles.profileEmail}>{user?.email}</Text>
           </View>
           <TouchableOpacity onPress={() => router.push('/profile')}>
-            <Ionicons name="chevron-forward" size={24} color={colors.textLight} />
+            <Icon name="chevron-forward" size={24} color={colors.textLight} />
           </TouchableOpacity>
         </Card>
 

@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { Card, LoadingSpinner, ProgressBar } from '../../components/common';
 import { useCategoryStore, useExpenseStore } from '../../store';
@@ -75,7 +75,7 @@ export const CategoryDetailScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{category.name}</Text>
         <View style={styles.placeholder} />
@@ -89,7 +89,7 @@ export const CategoryDetailScreen: React.FC = () => {
               { backgroundColor: `${category.color || colors.primary}20` },
             ]}
           >
-            <Ionicons
+            <Icon
               name={(category.icon as any) || 'folder-outline'}
               size={32}
               color={category.color || colors.primary}
