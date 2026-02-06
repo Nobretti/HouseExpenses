@@ -1,18 +1,39 @@
-import React, { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import React, { useEffect, useCallback } from 'react';
+import { View } from 'react-native';
+import { Stack, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/store';
 import { colors } from '../src/constants';
 
+// Prevent the splash screen from auto-hiding before fonts are loaded
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const { checkSession } = useAuthStore();
+
+  // Load Ionicons font
+  const [fontsLoaded, fontError] = useFonts({
+    ...Ionicons.font,
+  });
 
   useEffect(() => {
     checkSession();
   }, []);
 
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -58,6 +79,6 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-    </>
+    </View>
   );
 }
