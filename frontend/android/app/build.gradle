@@ -2,6 +2,15 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+// Apply react-native-vector-icons fonts configuration for Huawei compatibility
+project.ext.vectoricons = [
+    iconFontNames: [ 'Ionicons.ttf' ]
+]
+def vectorIconsFile = file("../../node_modules/react-native-vector-icons/fonts.gradle")
+if (vectorIconsFile.exists()) {
+    apply from: vectorIconsFile
+}
+
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
 /**

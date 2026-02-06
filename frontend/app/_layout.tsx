@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View } from 'react-native';
 import { Stack, SplashScreen } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font';
+import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/store';
 import { colors } from '../src/constants';
@@ -12,23 +12,39 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { checkSession } = useAuthStore();
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  // Load Ionicons font
-  const [fontsLoaded, fontError] = useFonts({
-    ...Ionicons.font,
-  });
+  // Load Ionicons font using Font.loadAsync for better Huawei compatibility
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          // Load from @expo/vector-icons
+          ...Ionicons.font,
+          // Also explicitly load the font file as a fallback
+          'Ionicons': require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.warn('Error loading fonts:', error);
+        // Still allow app to render even if fonts fail
+        setFontsLoaded(true);
+      }
+    }
+    loadFonts();
+  }, []);
 
   useEffect(() => {
     checkSession();
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
+    if (fontsLoaded) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!fontsLoaded) {
     return null;
   }
 
