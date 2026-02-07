@@ -7,6 +7,10 @@ export const config = {
     url: process.env.EXPO_PUBLIC_SUPABASE_URL || '',
     anonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
   },
+  auth: {
+    // URL for password reset page - served from the backend's static folder
+    passwordResetUrl: process.env.EXPO_PUBLIC_PASSWORD_RESET_URL || 'https://houseexpenses-production.up.railway.app/api/reset-password.html',
+  },
   pagination: {
     defaultPageSize: 20,
   },

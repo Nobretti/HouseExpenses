@@ -181,7 +181,11 @@ export const authService = {
   },
 
   async resetPassword(email: string): Promise<{ success: boolean; error: string | null }> {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    // Redirect to the hosted password reset page
+    // This URL must be added to Supabase Dashboard > Authentication > URL Configuration > Redirect URLs
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: config.auth.passwordResetUrl,
+    });
     return { success: !error, error: error?.message || null };
   },
 
