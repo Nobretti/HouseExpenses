@@ -77,7 +77,8 @@ export const ExpensesScreen: React.FC = () => {
       if (!expense.date) return false;
 
       // Get the expense type (defaults to 'monthly' for backwards compatibility)
-      const expenseType = expense.expenseType || 'monthly';
+      // Handle case-insensitivity in case backend returns uppercase
+      const expenseType = (expense.expenseType || 'monthly').toLowerCase();
 
       if (activeTab === 'monthly') {
         // Monthly tab: show current month expenses for monthly-type expenses

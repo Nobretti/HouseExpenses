@@ -45,11 +45,11 @@ public class Expense {
     private ExpenseType expenseType = ExpenseType.monthly;
 
     @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 
     public enum ExpenseType {
         monthly, annual
     }
-    private OffsetDateTime createdAt;
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;

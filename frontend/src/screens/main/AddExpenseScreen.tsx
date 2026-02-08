@@ -165,7 +165,7 @@ export const AddExpenseScreen: React.FC = () => {
 
         {/* Category Selection */}
         <Text style={styles.sectionTitle}>
-          Category{isExtraordinary ? ' (Optional)' : ''}
+          Category
         </Text>
         {errors.category && <Text style={styles.error}>{errors.category}</Text>}
         <View style={styles.categoriesGrid}>
