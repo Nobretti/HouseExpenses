@@ -46,7 +46,7 @@ export const ExpensesScreen: React.FC = () => {
   const {
     expenses,
     isLoading,
-    fetchExpenses,
+    fetchAllExpenses,
   } = useExpenseStore();
 
   const { categories, fetchCategories } = useCategoryStore();
@@ -60,39 +60,56 @@ export const ExpensesScreen: React.FC = () => {
   }, [params.filterSubCategoryId, params.filterCategoryId]);
 
   useEffect(() => {
-    fetchExpenses(0);
+    // Fetch ALL expenses to ensure none are missed due to pagination
+    fetchAllExpenses();
     fetchCategories();
   }, []);
 
-  // Filter expenses by tab (category type) and current period
+  // Filter expenses based on active tab:
+  // - Monthly tab: shows expenses from current month for monthly-type expenses
+  // - Annual tab: shows expenses for annual-type expenses only
   const periodFilteredExpenses = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    // Build a lookup of category expenseType from the categories store
-    const categoryTypeMap = new Map<string, string>();
-    for (const cat of categories) {
-      categoryTypeMap.set(cat.id, cat.expenseType);
-    }
-
     return expenses.filter(expense => {
-      // Determine category type: prefer store data, fallback to expense's embedded category
-      const catId = expense.category?.id;
-      const catType = (catId && categoryTypeMap.get(catId)) || (expense.category as any)?.expenseType;
+      if (!expense.date) return false;
 
-      // Filter by category type matching the active tab
-      if (catType && catType !== activeTab) return false;
+      // Get the expense type (defaults to 'monthly' for backwards compatibility)
+      const expenseType = expense.expenseType || 'monthly';
 
-      // Date filter: monthly tab = current month, annual tab = current year
-      const expenseDate = new Date(expense.date);
       if (activeTab === 'monthly') {
-        return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+        // Monthly tab: show current month expenses for monthly-type expenses
+        if (expenseType !== 'monthly') return false;
+
+        // Parse date safely to avoid timezone issues
+        const dateParts = expense.date.split('-');
+        let expenseYear: number;
+        let expenseMonth: number;
+
+        if (dateParts.length >= 3) {
+          expenseYear = parseInt(dateParts[0], 10);
+          expenseMonth = parseInt(dateParts[1], 10) - 1; // JS months are 0-indexed
+        } else {
+          const expenseDate = new Date(expense.date);
+          expenseYear = expenseDate.getFullYear();
+          expenseMonth = expenseDate.getMonth();
+        }
+
+        return expenseMonth === currentMonth && expenseYear === currentYear;
       } else {
-        return expenseDate.getFullYear() === currentYear;
+        // Annual tab: show only annual-type expenses from current year
+        if (expenseType !== 'annual') return false;
+
+        // Parse date to check year
+        const dateParts = expense.date.split('-');
+        const expenseYear = dateParts.length >= 1 ? parseInt(dateParts[0], 10) : new Date(expense.date).getFullYear();
+
+        return expenseYear === currentYear;
       }
     });
-  }, [expenses, activeTab, categories]);
+  }, [expenses, activeTab]);
 
   // Group expenses by category → subcategory
   const groupedExpenses = useMemo((): GroupedCategory[] => {
@@ -135,16 +152,23 @@ export const ExpensesScreen: React.FC = () => {
 
     // Convert to array and sort by total amount descending
     const result: GroupedCategory[] = [];
-    for (const [, group] of categoryMap) {
+    for (const [catId, group] of categoryMap) {
       // Find the full category from the store (has icon/color)
       const fullCategory = group.category
         ? categories.find(c => c.id === group.category!.id) || group.category
         : null;
 
-      if (!fullCategory) continue;
+      // Create a placeholder category if none exists
+      const category: Category = fullCategory || {
+        id: catId,
+        name: 'Uncategorized',
+        icon: 'help-circle-outline',
+        color: '#888888',
+        subCategories: [],
+      };
 
       result.push({
-        category: fullCategory,
+        category,
         totalAmount: group.totalAmount,
         subCategories: Array.from(group.subCategoryMap.values())
           .sort((a, b) => b.totalAmount - a.totalAmount),
@@ -167,7 +191,7 @@ export const ExpensesScreen: React.FC = () => {
   }, []);
 
   const handleRefresh = () => {
-    fetchExpenses(0);
+    fetchAllExpenses();
     fetchCategories();
   };
 
@@ -266,7 +290,9 @@ export const ExpensesScreen: React.FC = () => {
           <EmptyState
             icon="receipt-outline"
             title={`No expenses this ${activeTab === 'monthly' ? 'month' : 'year'}`}
-            description="Tap the + button to add your first expense"
+            description={expenses.length > 0
+              ? `Found ${expenses.length} expenses in store but none match ${activeTab === 'monthly' ? 'this month' : 'this year'}`
+              : "Tap the + button to add your first expense"}
           />
         ) : (
           groupedExpenses.map((group) => {

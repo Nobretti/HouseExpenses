@@ -39,7 +39,16 @@ public class Expense {
     @Column(name = "expense_date", nullable = false)
     private LocalDate expenseDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "expense_type")
+    @Builder.Default
+    private ExpenseType expenseType = ExpenseType.monthly;
+
     @Column(name = "created_at")
+
+    public enum ExpenseType {
+        monthly, annual
+    }
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at")

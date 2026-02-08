@@ -1,5 +1,6 @@
 package com.houseexpenses.dto;
 
+import com.houseexpenses.model.Expense.ExpenseType;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -27,4 +28,7 @@ public class CreateExpenseDTO {
 
     @NotNull(message = "Date is required")
     private LocalDate date;
+
+    @Builder.Default
+    private ExpenseType expenseType = ExpenseType.monthly;
 }

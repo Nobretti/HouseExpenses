@@ -52,7 +52,8 @@
       "WebFetch(domain:job-logs.eascdn.net)",
       "Bash(npx expo install:*)",
       "Bash(find:*)",
-      "Bash(node fix-icons.js:*)"
+      "Bash(node fix-icons.js:*)",
+      "Bash(npx eas-cli:*)"
     ]
   }
 }

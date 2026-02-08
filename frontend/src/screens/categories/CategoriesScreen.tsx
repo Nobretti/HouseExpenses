@@ -21,7 +21,6 @@ import { Category } from '../../types';
 export const CategoriesScreen: React.FC = () => {
   const router = useRouter();
   const { categories, isLoading, fetchCategories, reorderCategory } = useCategoryStore();
-  const [activeTab, setActiveTab] = useState<'monthly' | 'annual'>('monthly');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [allExpanded, setAllExpanded] = useState(true);
   const { width } = useWindowDimensions();
@@ -43,43 +42,41 @@ export const CategoriesScreen: React.FC = () => {
 
   // Toggle all categories expansion
   const toggleAllCategories = useCallback(() => {
-    const filtered = categories.filter(c => c.expenseType === activeTab);
     if (allExpanded) {
       setExpandedCategories(new Set());
     } else {
-      setExpandedCategories(new Set(filtered.map(c => c.id)));
+      setExpandedCategories(new Set(categories.map(c => c.id)));
     }
     setAllExpanded(!allExpanded);
-  }, [categories, activeTab, allExpanded]);
+  }, [categories, allExpanded]);
 
-  // Initialize expanded state when categories load or tab changes
+  // Initialize expanded state when categories load
   useEffect(() => {
-    const filtered = categories.filter(c => c.expenseType === activeTab);
     if (allExpanded) {
-      setExpandedCategories(new Set(filtered.map(c => c.id)));
+      setExpandedCategories(new Set(categories.map(c => c.id)));
     }
-  }, [categories, activeTab]);
+  }, [categories]);
 
   // Move category up or down
   const moveCategory = useCallback(async (categoryId: string, direction: 'up' | 'down') => {
-    const filtered = categories.filter(c => c.expenseType === activeTab);
-    const currentIndex = filtered.findIndex(c => c.id === categoryId);
+    const sortedCategories = [...categories].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    const currentIndex = sortedCategories.findIndex(c => c.id === categoryId);
 
     if (direction === 'up' && currentIndex > 0) {
       const newOrder = currentIndex - 1;
       await reorderCategory(categoryId, newOrder);
-    } else if (direction === 'down' && currentIndex < filtered.length - 1) {
+    } else if (direction === 'down' && currentIndex < sortedCategories.length - 1) {
       const newOrder = currentIndex + 1;
       await reorderCategory(categoryId, newOrder);
     }
-  }, [categories, activeTab, reorderCategory]);
+  }, [categories, reorderCategory]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  const filteredCategories = categories
-    .filter((c) => c.expenseType === activeTab)
+  // Show all categories sorted by display order
+  const sortedCategories = [...categories]
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   const handleCategoryPress = (category: Category) => {
@@ -121,33 +118,12 @@ export const CategoriesScreen: React.FC = () => {
         </View>
       </View>
 
-      <View style={[styles.tabsWrapper, isWeb && isWideScreen && styles.webTabsWrapper]}>
-        <View style={styles.tabs}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'monthly' && styles.tabActive]}
-          onPress={() => setActiveTab('monthly')}
-        >
-          <Text style={[styles.tabText, activeTab === 'monthly' && styles.tabTextActive]}>
-            Monthly
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'annual' && styles.tabActive]}
-          onPress={() => setActiveTab('annual')}
-        >
-          <Text style={[styles.tabText, activeTab === 'annual' && styles.tabTextActive]}>
-            Annual
-          </Text>
-        </TouchableOpacity>
-        </View>
-      </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
           styles.content,
           isWeb && isWideScreen && styles.webContent,
-          filteredCategories.length === 0 && styles.emptyContent,
+          sortedCategories.length === 0 && styles.emptyContent,
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -159,17 +135,17 @@ export const CategoriesScreen: React.FC = () => {
           />
         }
       >
-        {filteredCategories.length === 0 ? (
+        {sortedCategories.length === 0 ? (
           <EmptyState
             icon="folder-outline"
-            title={`No ${activeTab} categories`}
-            description={`Tap the + button to create your first ${activeTab} category`}
+            title="No categories"
+            description="Tap the + button to create your first category"
           />
-        ) : filteredCategories.map((category, categoryIndex) => {
+        ) : sortedCategories.map((category, categoryIndex) => {
           const isExpanded = isCategoryExpanded(category.id);
           const hasSubCategories = category.subCategories && category.subCategories.length > 0;
           const isFirst = categoryIndex === 0;
-          const isLast = categoryIndex === filteredCategories.length - 1;
+          const isLast = categoryIndex === sortedCategories.length - 1;
 
           return (
             <Card key={category.id} style={styles.categoryCard}>
@@ -295,7 +271,7 @@ export const CategoriesScreen: React.FC = () => {
             </Card>
           );
         })}
-        {filteredCategories.length > 0 && (
+        {sortedCategories.length > 0 && (
           <View style={styles.bottomSpacing} />
         )}
       </ScrollView>
@@ -341,39 +317,6 @@ const styles = StyleSheet.create({
   },
   addButton: {
     padding: 4,
-  },
-  tabsWrapper: {
-    paddingHorizontal: 24,
-  },
-  webTabsWrapper: {
-    alignItems: 'center',
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 20,
-    width: '100%',
-    maxWidth: 1200,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  tabActive: {
-    backgroundColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  tabTextActive: {
-    color: colors.surface,
-    fontWeight: '600',
   },
   scrollView: {
     flex: 1,

@@ -15,6 +15,7 @@ interface ExpenseState {
 
   // Actions
   fetchExpenses: (page?: number) => Promise<void>;
+  fetchAllExpenses: () => Promise<void>;
   addExpense: (data: CreateExpenseDTO) => Promise<Expense | null>;
   addBulkExpenses: (data: CreateExpenseDTO[]) => Promise<boolean>;
   updateExpense: (id: string, data: CreateExpenseDTO) => Promise<boolean>;
@@ -46,6 +47,28 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
         expenses: page === 0 ? expenses : [...get().expenses, ...expenses],
         pagination: {
           page,
+          totalPages: pagination.totalPages,
+          totalElements: pagination.totalElements,
+        },
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ error: 'Failed to load expenses', isLoading: false });
+    }
+  },
+
+  fetchAllExpenses: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      // Fetch ALL expenses without any filters to ensure we get everything
+      const { expenses, pagination } = await expenseService.getExpenses(
+        {}, // Empty filters - get all expenses
+        { page: 0, size: 1000 }
+      );
+      set({
+        expenses,
+        pagination: {
+          page: 0,
           totalPages: pagination.totalPages,
           totalElements: pagination.totalElements,
         },

@@ -1,4 +1,4 @@
-import { Category, SubCategory } from './category';
+import { Category, SubCategory, ExpenseType } from './category';
 
 export interface Expense {
   id: string;
@@ -7,6 +7,7 @@ export interface Expense {
   amount: number;
   description?: string;
   date: string;
+  expenseType: ExpenseType;
   createdAt: string;
 }
 
@@ -16,6 +17,7 @@ export interface CreateExpenseDTO {
   amount: number;
   description?: string;
   date: string;
+  expenseType?: ExpenseType;
 }
 
 export interface ExpenseFilters {

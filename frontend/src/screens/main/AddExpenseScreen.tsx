@@ -14,7 +14,7 @@ import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore, useDashboardStore } from '../../store';
 import { Button, Card, CategoryIcon, Toast } from '../../components/common';
-import { Category, SubCategory } from '../../types';
+import { Category, SubCategory, ExpenseType } from '../../types';
 import { toISODateString } from '../../utils';
 
 export const AddExpenseScreen: React.FC = () => {
@@ -24,6 +24,7 @@ export const AddExpenseScreen: React.FC = () => {
     presetCategoryId?: string;
     presetAmount?: string;
     presetIsFixed?: string;
+    presetExpenseType?: string;
   }>();
   const { addExpense, isLoading } = useExpenseStore();
   const { categories, fetchCategories } = useCategoryStore();
@@ -37,7 +38,7 @@ export const AddExpenseScreen: React.FC = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date());
-  const [isExtraordinary, setIsExtraordinary] = useState(false);
+  const [expenseType, setExpenseType] = useState<ExpenseType>((params.presetExpenseType as ExpenseType) || 'monthly');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' as 'success' | 'error' });
 
@@ -66,10 +67,8 @@ export const AddExpenseScreen: React.FC = () => {
     }
   }, [categories, params, isFixedExpense]);
 
-  // Show all categories when extraordinary or all, otherwise just monthly
-  const availableCategories = isExtraordinary
-    ? categories
-    : categories.filter((c) => c.expenseType === 'monthly');
+  // Show all categories (no longer filtered by expense type)
+  const availableCategories = categories;
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -77,8 +76,7 @@ export const AddExpenseScreen: React.FC = () => {
     if (!amount || parseFloat(amount) <= 0) {
       newErrors.amount = 'Please enter a valid amount';
     }
-    // Category is optional for extraordinary expenses
-    if (!selectedCategory && !isExtraordinary) {
+    if (!selectedCategory) {
       newErrors.category = 'Please select a category';
     }
 
@@ -95,6 +93,7 @@ export const AddExpenseScreen: React.FC = () => {
       subCategoryId: selectedSubCategory?.id,
       description: description.trim() || undefined,
       date: toISODateString(date),
+      expenseType: expenseType,
     });
 
     if (expense) {
@@ -234,45 +233,60 @@ export const AddExpenseScreen: React.FC = () => {
           </Card>
         )}
 
-        {/* Extraordinary Expense Toggle */}
+        {/* Expense Type Selector */}
         {!hasPreset && (
-          <TouchableOpacity
-            style={styles.extraordinaryToggle}
-            onPress={() => setIsExtraordinary(!isExtraordinary)}
-          >
-            <View style={styles.extraordinaryLeft}>
-              <View style={[styles.extraordinaryIcon, isExtraordinary && styles.extraordinaryIconActive]}>
+          <View style={styles.expenseTypeSection}>
+            <Text style={styles.sectionTitle}>Expense Type</Text>
+            <View style={styles.expenseTypeTabs}>
+              <TouchableOpacity
+                style={[styles.expenseTypeTab, expenseType === 'monthly' && styles.expenseTypeTabActive]}
+                onPress={() => setExpenseType('monthly')}
+              >
                 <Icon
-                  name="flash"
+                  name="calendar-outline"
                   size={18}
-                  color={isExtraordinary ? colors.surface : colors.warning}
+                  color={expenseType === 'monthly' ? colors.surface : colors.textSecondary}
                 />
-              </View>
-              <View>
-                <Text style={styles.extraordinaryLabel}>Extraordinary Expense</Text>
-                <Text style={styles.extraordinaryHint}>Unexpected or one-time expense</Text>
-              </View>
+                <Text style={[styles.expenseTypeTabText, expenseType === 'monthly' && styles.expenseTypeTabTextActive]}>
+                  Monthly
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.expenseTypeTab, expenseType === 'annual' && styles.expenseTypeTabActive]}
+                onPress={() => setExpenseType('annual')}
+              >
+                <Icon
+                  name="calendar"
+                  size={18}
+                  color={expenseType === 'annual' ? colors.surface : colors.textSecondary}
+                />
+                <Text style={[styles.expenseTypeTabText, expenseType === 'annual' && styles.expenseTypeTabTextActive]}>
+                  Annual
+                </Text>
+              </TouchableOpacity>
             </View>
-            <View style={[styles.toggleSwitch, isExtraordinary && styles.toggleSwitchActive]}>
-              <View style={[styles.toggleKnob, isExtraordinary && styles.toggleKnobActive]} />
-            </View>
-          </TouchableOpacity>
+            <Text style={styles.expenseTypeHint}>
+              {expenseType === 'monthly'
+                ? 'Regular monthly expense (bills, groceries, etc.)'
+                : 'Yearly payment (subscriptions, insurance, etc.)'}
+            </Text>
+          </View>
         )}
 
         {/* Description */}
-        <Text style={styles.sectionTitle}>Description {isExtraordinary ? '' : '(Optional)'}</Text>
+        <Text style={styles.sectionTitle}>Description (Optional)</Text>
         <TextInput
           style={styles.descriptionInput}
           value={description}
           onChangeText={setDescription}
-          placeholder={isExtraordinary ? "Describe this extraordinary expense..." : "What was this expense for?"}
+          placeholder="What was this expense for?"
           placeholderTextColor={colors.textLight}
           multiline
           numberOfLines={3}
         />
 
         <Button
-          title={isExtraordinary ? "Save Extraordinary Expense" : "Save Expense"}
+          title="Save Expense"
           onPress={handleSubmit}
           loading={isLoading}
           style={styles.submitButton}
@@ -500,60 +514,41 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     flex: 1,
   },
-  extraordinaryToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    padding: 16,
+  expenseTypeSection: {
     marginBottom: 24,
   },
-  extraordinaryLeft: {
+  expenseTypeTabs: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 4,
+  },
+  expenseTypeTab: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-  },
-  extraordinaryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: `${colors.warning}15`,
-    alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    paddingVertical: 14,
+    borderRadius: 10,
   },
-  extraordinaryIconActive: {
-    backgroundColor: colors.warning,
+  expenseTypeTabActive: {
+    backgroundColor: colors.primary,
   },
-  extraordinaryLabel: {
+  expenseTypeTabText: {
     fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginLeft: 8,
   },
-  extraordinaryHint: {
+  expenseTypeTabTextActive: {
+    color: colors.surface,
+    fontWeight: '600',
+  },
+  expenseTypeHint: {
     fontSize: 12,
     color: colors.textSecondary,
-    marginTop: 2,
-  },
-  toggleSwitch: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.border,
-    padding: 2,
-  },
-  toggleSwitchActive: {
-    backgroundColor: colors.warning,
-  },
-  toggleKnob: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.surface,
-  },
-  toggleKnobActive: {
-    marginLeft: 22,
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
 

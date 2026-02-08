@@ -1,5 +1,6 @@
 package com.houseexpenses.dto;
 
+import com.houseexpenses.model.Expense.ExpenseType;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,5 +18,6 @@ public class ExpenseDTO {
     private BigDecimal amount;
     private String description;
     private LocalDate date;
+    private ExpenseType expenseType;
     private OffsetDateTime createdAt;
 }

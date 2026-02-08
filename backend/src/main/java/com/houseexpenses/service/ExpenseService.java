@@ -63,6 +63,7 @@ public class ExpenseService {
                 .amount(dto.getAmount())
                 .description(dto.getDescription())
                 .expenseDate(dto.getDate())
+                .expenseType(dto.getExpenseType() != null ? dto.getExpenseType() : Expense.ExpenseType.monthly)
                 .build();
 
         expense = expenseRepository.save(expense);
@@ -102,6 +103,7 @@ public class ExpenseService {
         expense.setAmount(dto.getAmount());
         expense.setDescription(dto.getDescription());
         expense.setExpenseDate(dto.getDate());
+        expense.setExpenseType(dto.getExpenseType() != null ? dto.getExpenseType() : Expense.ExpenseType.monthly);
 
         expense = expenseRepository.save(expense);
         log.info("Updated expense {} for user {}", expense.getId(), userId);
@@ -127,6 +129,7 @@ public class ExpenseService {
                 .amount(expense.getAmount())
                 .description(expense.getDescription())
                 .date(expense.getExpenseDate())
+                .expenseType(expense.getExpenseType() != null ? expense.getExpenseType() : Expense.ExpenseType.monthly)
                 .createdAt(expense.getCreatedAt())
                 .build();
     }

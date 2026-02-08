@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -26,19 +26,30 @@ export const ExpensesFilteredScreen: React.FC = () => {
   const isWeb = Platform.OS === 'web';
   const isWideScreen = width > 768;
 
+  // Track if we've loaded fresh data for this screen
+  const [hasFreshData, setHasFreshData] = useState(false);
+
   const {
     expenses,
     isLoading,
-    pagination,
-    fetchExpenses,
+    fetchAllExpenses,
     deleteExpense,
   } = useExpenseStore();
 
   const { categories } = useCategoryStore();
 
+  // Reset fresh data flag when filter params change
   useEffect(() => {
-    fetchExpenses(0);
-  }, []);
+    setHasFreshData(false);
+  }, [params.filterSubCategoryId, params.filterCategoryId, params.period]);
+
+  useEffect(() => {
+    const loadFreshData = async () => {
+      await fetchAllExpenses();
+      setHasFreshData(true);
+    };
+    loadFreshData();
+  }, [params.filterSubCategoryId, params.filterCategoryId, params.period]);
 
   // Determine the filter name for display
   const filterName = useMemo(() => {
@@ -55,21 +66,47 @@ export const ExpensesFilteredScreen: React.FC = () => {
   }, [params.filterSubCategoryId, params.filterCategoryId, categories]);
 
   // Filter expenses by subcategory/category and period
+  // Only show expenses after fresh data is loaded to avoid showing stale/deleted expenses
   const filteredExpenses = useMemo(() => {
+    // Don't show stale data - wait for fresh fetch
+    if (!hasFreshData) {
+      return [];
+    }
+
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     const period = params.period || 'monthly';
 
     return expenses.filter(expense => {
+      // Skip expenses without valid IDs (could be stale/corrupted)
+      if (!expense.id || !expense.date) {
+        return false;
+      }
+
+      // Parse date safely to avoid timezone issues
+      // expense.date format is "YYYY-MM-DD" from backend
+      const dateParts = expense.date.split('-');
+      let expenseYear: number;
+      let expenseMonth: number;
+
+      if (dateParts.length >= 3) {
+        expenseYear = parseInt(dateParts[0], 10);
+        expenseMonth = parseInt(dateParts[1], 10) - 1; // JS months are 0-indexed
+      } else {
+        // Fallback to Date parsing
+        const expenseDate = new Date(expense.date);
+        expenseYear = expenseDate.getFullYear();
+        expenseMonth = expenseDate.getMonth();
+      }
+
       // Period filter
-      const expenseDate = new Date(expense.date);
       if (period === 'monthly') {
-        if (expenseDate.getMonth() !== currentMonth || expenseDate.getFullYear() !== currentYear) {
+        if (expenseMonth !== currentMonth || expenseYear !== currentYear) {
           return false;
         }
       } else {
-        if (expenseDate.getFullYear() !== currentYear) {
+        if (expenseYear !== currentYear) {
           return false;
         }
       }
@@ -83,16 +120,16 @@ export const ExpensesFilteredScreen: React.FC = () => {
       }
       return true;
     });
-  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period]);
+  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period, hasFreshData]);
 
-  const handleRefresh = () => {
-    fetchExpenses(0);
-  };
+  const handleRefresh = useCallback(async () => {
+    setHasFreshData(false);
+    await fetchAllExpenses();
+    setHasFreshData(true);
+  }, [fetchAllExpenses]);
 
   const handleLoadMore = () => {
-    if (pagination.page < pagination.totalPages - 1) {
-      fetchExpenses(pagination.page + 1);
-    }
+    // All expenses are now loaded at once, no pagination needed
   };
 
   const handleExpensePress = (expense: Expense) => {
@@ -102,9 +139,16 @@ export const ExpensesFilteredScreen: React.FC = () => {
     });
   };
 
-  const handleExpenseDelete = async (expense: Expense) => {
-    await deleteExpense(expense.id);
-  };
+  const handleExpenseDelete = useCallback(async (expense: Expense) => {
+    const success = await deleteExpense(expense.id);
+    // Refresh to ensure list is up to date after delete
+    if (success) {
+      await fetchAllExpenses();
+    }
+  }, [deleteExpense, fetchAllExpenses]);
+
+  // Show loading when fetching fresh data
+  const showLoading = isLoading || !hasFreshData;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -133,12 +177,12 @@ export const ExpensesFilteredScreen: React.FC = () => {
       <View style={[styles.listContainer, isWeb && isWideScreen && styles.webListContainer]}>
         <ExpenseList
           expenses={filteredExpenses}
-          isLoading={isLoading}
+          isLoading={showLoading}
           onRefresh={handleRefresh}
           onLoadMore={handleLoadMore}
           onExpensePress={handleExpensePress}
           onExpenseDelete={handleExpenseDelete}
-          hasMore={pagination.page < pagination.totalPages - 1}
+          hasMore={false}
         />
       </View>
     </SafeAreaView>

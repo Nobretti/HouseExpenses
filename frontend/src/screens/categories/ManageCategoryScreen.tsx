@@ -49,7 +49,8 @@ export const ManageCategoryScreen: React.FC = () => {
   const [name, setName] = useState(existingCategory?.name || '');
   const [selectedIcon, setSelectedIcon] = useState(existingCategory?.icon || 'home-outline');
   const [selectedColor, setSelectedColor] = useState(existingCategory?.color || CATEGORY_COLORS[0]);
-  const [expenseType, setExpenseType] = useState<'monthly' | 'annual'>(existingCategory?.expenseType || 'monthly');
+  // Default to 'monthly' for backend compatibility (UI no longer shows type selector)
+  const expenseType = existingCategory?.expenseType || 'monthly';
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Subcategory state
@@ -312,27 +313,6 @@ export const ManageCategoryScreen: React.FC = () => {
           placeholderTextColor={colors.textLight}
         />
         {errors.name && <Text style={styles.error}>{errors.name}</Text>}
-
-        {/* Expense Type */}
-        <Text style={styles.label}>Expense Type</Text>
-        <View style={styles.typeSelector}>
-          <TouchableOpacity
-            style={[styles.typeButton, expenseType === 'monthly' && styles.typeButtonSelected]}
-            onPress={() => setExpenseType('monthly')}
-          >
-            <Text style={[styles.typeButtonText, expenseType === 'monthly' && styles.typeButtonTextSelected]}>
-              Monthly
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.typeButton, expenseType === 'annual' && styles.typeButtonSelected]}
-            onPress={() => setExpenseType('annual')}
-          >
-            <Text style={[styles.typeButtonText, expenseType === 'annual' && styles.typeButtonTextSelected]}>
-              Annual
-            </Text>
-          </TouchableOpacity>
-        </View>
 
         {/* Icon Selection */}
         <Text style={styles.label}>Icon</Text>
@@ -673,30 +653,6 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontSize: 13,
     marginTop: 6,
-  },
-  typeSelector: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    padding: 4,
-  },
-  typeButton: {
-    flex: 1,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  typeButtonSelected: {
-    backgroundColor: colors.primary,
-  },
-  typeButtonText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  typeButtonTextSelected: {
-    color: colors.surface,
-    fontWeight: '600',
   },
   iconGrid: {
     flexDirection: 'row',

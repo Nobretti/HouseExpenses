@@ -26,9 +26,14 @@ export const ExpenseDetailScreen: React.FC = () => {
   useEffect(() => {
     if (id) {
       const found = expenses.find((e) => e.id === id);
-      setExpense(found || null);
+      if (found) {
+        setExpense(found);
+      } else if (!isLoading && expenses.length > 0) {
+        // Expense was deleted or doesn't exist - go back
+        router.back();
+      }
     }
-  }, [id, expenses]);
+  }, [id, expenses, isLoading, router]);
 
   const handleDelete = () => {
     Alert.alert(
