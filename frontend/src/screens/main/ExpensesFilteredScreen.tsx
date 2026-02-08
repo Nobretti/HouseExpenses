@@ -38,6 +38,11 @@ export const ExpensesFilteredScreen: React.FC = () => {
 
   const { categories } = useCategoryStore();
 
+  // Build a set of active category IDs for fast lookup
+  const activeCategoryIds = useMemo(() => {
+    return new Set(categories.map(c => c.id));
+  }, [categories]);
+
   // Reset fresh data flag when filter params change
   useEffect(() => {
     setHasFreshData(false);
@@ -84,6 +89,11 @@ export const ExpensesFilteredScreen: React.FC = () => {
         return false;
       }
 
+      // Exclude expenses whose category has been deleted (soft-deleted)
+      if (expense.category?.id && !activeCategoryIds.has(expense.category.id)) {
+        return false;
+      }
+
       // Parse date safely to avoid timezone issues
       // expense.date format is "YYYY-MM-DD" from backend
       const dateParts = expense.date.split('-');
@@ -120,7 +130,7 @@ export const ExpensesFilteredScreen: React.FC = () => {
       }
       return true;
     });
-  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period, hasFreshData]);
+  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period, hasFreshData, activeCategoryIds]);
 
   const handleRefresh = useCallback(async () => {
     setHasFreshData(false);

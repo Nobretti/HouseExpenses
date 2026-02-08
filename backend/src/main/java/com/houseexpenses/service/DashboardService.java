@@ -52,7 +52,7 @@ public class DashboardService {
         List<CategorySpendingDTO> topCategories = getTopCategoriesSpending(userId, monthRange[0], monthRange[1], 5);
 
         List<ExpenseDTO> recentExpenses = expenseRepository
-                .findByUserIdAndExpenseDateBetweenOrderByExpenseDateDesc(userId, monthRange[0], monthRange[1])
+                .findByUserIdAndActiveCategoryAndExpenseDateBetween(userId, monthRange[0], monthRange[1])
                 .stream()
                 .map(this::mapExpenseToDTO)
                 .collect(Collectors.toList());

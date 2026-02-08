@@ -10,12 +10,12 @@ import {
   Platform,
   useWindowDimensions,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
 import { Card, CategoryIcon, LoadingSpinner, EmptyState } from '../../components/common';
-import { Expense, Category } from '../../types';
+import { Category } from '../../types';
 
 interface GroupedSubCategory {
   subCategoryId: string;
@@ -59,11 +59,19 @@ export const ExpensesScreen: React.FC = () => {
     }
   }, [params.filterSubCategoryId, params.filterCategoryId]);
 
-  useEffect(() => {
-    // Fetch ALL expenses to ensure none are missed due to pagination
-    fetchAllExpenses();
-    fetchCategories();
-  }, []);
+  // Re-fetch expenses every time the screen gains focus to ensure
+  // deleted/added expenses are reflected immediately
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllExpenses();
+      fetchCategories();
+    }, [fetchAllExpenses, fetchCategories])
+  );
+
+  // Build a set of active category IDs for fast lookup
+  const activeCategoryIds = useMemo(() => {
+    return new Set(categories.map(c => c.id));
+  }, [categories]);
 
   // Filter expenses based on active tab:
   // - Monthly tab: shows expenses from current month for monthly-type expenses
@@ -76,9 +84,13 @@ export const ExpensesScreen: React.FC = () => {
     return expenses.filter(expense => {
       if (!expense.date) return false;
 
+      // Exclude expenses whose category has been deleted (soft-deleted)
+      if (expense.category?.id && !activeCategoryIds.has(expense.category.id)) return false;
+
       // Get the expense type (defaults to 'monthly' for backwards compatibility)
       // Handle case-insensitivity in case backend returns uppercase
-      const expenseType = (expense.expenseType || 'monthly').toLowerCase();
+      const rawExpenseType = expense.expenseType;
+      const expenseType = (rawExpenseType || 'monthly').toLowerCase();
 
       if (activeTab === 'monthly') {
         // Monthly tab: show current month expenses for monthly-type expenses
@@ -110,7 +122,7 @@ export const ExpensesScreen: React.FC = () => {
         return expenseYear === currentYear;
       }
     });
-  }, [expenses, activeTab]);
+  }, [expenses, activeTab, activeCategoryIds]);
 
   // Group expenses by category → subcategory
   const groupedExpenses = useMemo((): GroupedCategory[] => {
