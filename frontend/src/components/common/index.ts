@@ -9,3 +9,4 @@ export { Toast, ToastType } from './Toast';
 export { ConfirmDialog, DialogType } from './ConfirmDialog';
 export { SvgIcon } from './SvgIcon';
 export { Icon } from './Icon';
+export { ExportModal } from './ExportModal';

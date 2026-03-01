@@ -9,13 +9,15 @@ import {
   RefreshControl,
   Platform,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Icon } from '../../components/common';
 import { colors } from '../../constants';
 import { useExpenseStore, useCategoryStore } from '../../store';
-import { Card, CategoryIcon, LoadingSpinner, EmptyState } from '../../components/common';
+import { Card, CategoryIcon, LoadingSpinner, EmptyState, ExportModal } from '../../components/common';
 import { Category } from '../../types';
+import { exportExpenses, ExportFormat } from '../../utils/exportUtils';
 
 interface GroupedSubCategory {
   subCategoryId: string;
@@ -42,6 +44,8 @@ export const ExpensesScreen: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'monthly' | 'annual'>('monthly');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const {
     expenses,
@@ -231,6 +235,24 @@ export const ExpensesScreen: React.FC = () => {
     ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' })
     : new Date().getFullYear().toString();
 
+  const handleExport = useCallback(async (format: ExportFormat) => {
+    setIsExporting(true);
+    try {
+      await exportExpenses(
+        periodFilteredExpenses,
+        format,
+        activeTab,
+        periodLabel,
+        totalSpent,
+      );
+      setShowExportModal(false);
+    } catch {
+      Alert.alert('Export failed', 'Could not export expenses. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  }, [periodFilteredExpenses, activeTab, periodLabel, totalSpent]);
+
   if (isLoading && expenses.length === 0) {
     return <LoadingSpinner fullScreen message="Loading expenses..." />;
   }
@@ -240,12 +262,22 @@ export const ExpensesScreen: React.FC = () => {
       <View style={[styles.headerWrapper, isWeb && isWideScreen && styles.webHeader]}>
         <View style={styles.header}>
           <Text style={styles.title}>Expenses</Text>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => router.push('/expense-filter')}
-          >
-            <Icon name="filter-outline" size={24} color={colors.text} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {periodFilteredExpenses.length > 0 && (
+              <TouchableOpacity
+                style={styles.headerButton}
+                onPress={() => setShowExportModal(true)}
+              >
+                <Icon name="download-outline" size={22} color={colors.text} />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => router.push('/expense-filter')}
+            >
+              <Icon name="filter-outline" size={24} color={colors.text} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -396,6 +428,17 @@ export const ExpensesScreen: React.FC = () => {
       >
         <Icon name="add" size={28} color={colors.surface} />
       </TouchableOpacity>
+
+      {/* Export Modal */}
+      <ExportModal
+        visible={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleExport}
+        periodLabel={periodLabel}
+        expenseCount={periodFilteredExpenses.length}
+        totalAmount={totalSpent}
+        isExporting={isExporting}
+      />
     </SafeAreaView>
   );
 };
@@ -429,6 +472,15 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   filterButton: {
+    padding: 8,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  headerButton: {
     padding: 8,
     backgroundColor: colors.surface,
     borderRadius: 10,
