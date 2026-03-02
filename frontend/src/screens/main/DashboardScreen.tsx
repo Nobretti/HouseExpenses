@@ -114,11 +114,15 @@ export const DashboardScreen: React.FC = () => {
     };
   }, [user?.monthlyBudgetLimit, monthlyData?.total]);
 
-  // Refresh data every time this screen gains focus (e.g. after paying an expense)
+  // Show full-screen spinner on every focus refresh so stale data is
+  // never visible while new data loads.
+  const [isFocusRefreshing, setIsFocusRefreshing] = useState(true);
+
   useFocusEffect(
     useCallback(() => {
-      refreshDashboard();
-      fetchCategories();
+      setIsFocusRefreshing(true);
+      Promise.all([refreshDashboard(), fetchCategories()])
+        .finally(() => setIsFocusRefreshing(false));
     }, [])
   );
 
@@ -129,10 +133,9 @@ export const DashboardScreen: React.FC = () => {
     }
   }, [categories, summary?.recentExpenses]);
 
-  const handleRefresh = () => {
-    refreshDashboard();
-    fetchCategories();
-  };
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([refreshDashboard(), fetchCategories()]);
+  }, [refreshDashboard, fetchCategories]);
 
   const handlePayMonthlyExpense = (expense: MonthlyExpenseStatus) => {
     router.push({
@@ -142,6 +145,8 @@ export const DashboardScreen: React.FC = () => {
         presetCategoryId: expense.categoryId,
         presetAmount: expense.expectedAmount.toString(),
         presetIsFixed: expense.isFixed ? 'true' : 'false',
+        presetYear: selectedYear.toString(),
+        presetMonth: selectedMonth.toString(),
       },
     });
   };
@@ -157,7 +162,7 @@ export const DashboardScreen: React.FC = () => {
     });
   };
 
-  if (isLoading && !summary) {
+  if (isFocusRefreshing) {
     return <LoadingSpinner fullScreen message="Loading dashboard..." />;
   }
 
@@ -201,7 +206,7 @@ export const DashboardScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={isLoading}
+            refreshing={isLoading && !isFocusRefreshing}
             onRefresh={handleRefresh}
             colors={[colors.primary]}
             tintColor={colors.primary}

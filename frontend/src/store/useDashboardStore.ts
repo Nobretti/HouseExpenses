@@ -193,7 +193,15 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   },
 
   setSelectedPeriod: (year: number, month: number) => {
-    set({ selectedYear: year, selectedMonth: month });
+    // Clear stale data so the full-screen loading indicator appears
+    // instead of showing cached values from the previous period.
+    set({
+      selectedYear: year,
+      selectedMonth: month,
+      summary: null,
+      monthlyData: null,
+      weeklyData: null,
+    });
     get().refreshDashboard({ year, month });
   },
 

@@ -21,6 +21,8 @@ export const ExpensesFilteredScreen: React.FC = () => {
     filterSubCategoryId?: string;
     filterCategoryId?: string;
     period?: string;
+    filterYear?: string;
+    filterMonth?: string;
   }>();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -70,6 +72,11 @@ export const ExpensesFilteredScreen: React.FC = () => {
     return 'Filtered';
   }, [params.filterSubCategoryId, params.filterCategoryId, categories]);
 
+  // Resolve the period to filter against (falls back to current date if not provided)
+  const now = new Date();
+  const filterYear = params.filterYear ? parseInt(params.filterYear) : now.getFullYear();
+  const filterMonth = params.filterMonth ? parseInt(params.filterMonth) - 1 : now.getMonth(); // 0-indexed
+
   // Filter expenses by subcategory/category and period
   // Only show expenses after fresh data is loaded to avoid showing stale/deleted expenses
   const filteredExpenses = useMemo(() => {
@@ -78,9 +85,6 @@ export const ExpensesFilteredScreen: React.FC = () => {
       return [];
     }
 
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
     const period = params.period || 'monthly';
 
     return expenses.filter(expense => {
@@ -98,13 +102,12 @@ export const ExpensesFilteredScreen: React.FC = () => {
       // expense.date format is "YYYY-MM-DD" from backend
       const dateParts = expense.date.split('-');
       let expenseYear: number;
-      let expenseMonth: number;
+      let expenseMonth: number; // 0-indexed
 
       if (dateParts.length >= 3) {
         expenseYear = parseInt(dateParts[0], 10);
-        expenseMonth = parseInt(dateParts[1], 10) - 1; // JS months are 0-indexed
+        expenseMonth = parseInt(dateParts[1], 10) - 1;
       } else {
-        // Fallback to Date parsing
         const expenseDate = new Date(expense.date);
         expenseYear = expenseDate.getFullYear();
         expenseMonth = expenseDate.getMonth();
@@ -112,11 +115,11 @@ export const ExpensesFilteredScreen: React.FC = () => {
 
       // Period filter
       if (period === 'monthly') {
-        if (expenseMonth !== currentMonth || expenseYear !== currentYear) {
+        if (expenseMonth !== filterMonth || expenseYear !== filterYear) {
           return false;
         }
       } else {
-        if (expenseYear !== currentYear) {
+        if (expenseYear !== filterYear) {
           return false;
         }
       }
@@ -130,7 +133,7 @@ export const ExpensesFilteredScreen: React.FC = () => {
       }
       return true;
     });
-  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period, hasFreshData, activeCategoryIds]);
+  }, [expenses, params.filterSubCategoryId, params.filterCategoryId, params.period, hasFreshData, activeCategoryIds, filterYear, filterMonth]);
 
   const handleRefresh = useCallback(async () => {
     setHasFreshData(false);
@@ -175,8 +178,8 @@ export const ExpensesFilteredScreen: React.FC = () => {
           <Icon name="calendar-outline" size={16} color={colors.primary} />
           <Text style={styles.periodText}>
             {params.period === 'annual'
-              ? new Date().getFullYear().toString()
-              : new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+              ? filterYear.toString()
+              : new Date(filterYear, filterMonth, 1).toLocaleString('default', { month: 'long', year: 'numeric' })}
           </Text>
           <Text style={styles.countText}>
             {filteredExpenses.length} {filteredExpenses.length === 1 ? 'expense' : 'expenses'}

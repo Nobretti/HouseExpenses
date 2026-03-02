@@ -47,6 +47,66 @@ export const ExpensesScreen: React.FC = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Period navigation state
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+
+  const isCurrentPeriod =
+    selectedYear === now.getFullYear() && selectedMonth === now.getMonth() + 1;
+  const isFirstMonth = selectedYear === 2026 && selectedMonth === 1;
+  const isPrevDisabled = activeTab === 'annual' ? selectedYear <= 2026 : isFirstMonth;
+  const isNextDisabled =
+    activeTab === 'annual'
+      ? selectedYear >= now.getFullYear()
+      : isCurrentPeriod;
+
+  const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const goToPrevious = useCallback(() => {
+    if (activeTab === 'annual') {
+      if (selectedYear <= 2026) return;
+      setSelectedYear(y => y - 1);
+    } else {
+      if (isFirstMonth) return;
+      let newMonth = selectedMonth - 1;
+      let newYear = selectedYear;
+      if (newMonth < 1) { newMonth = 12; newYear -= 1; }
+      if (newYear < 2026) return;
+      setSelectedYear(newYear);
+      setSelectedMonth(newMonth);
+    }
+    setExpandedCategories(new Set());
+  }, [activeTab, selectedYear, selectedMonth, isFirstMonth]);
+
+  const goToNext = useCallback(() => {
+    if (activeTab === 'annual') {
+      if (selectedYear >= now.getFullYear()) return;
+      setSelectedYear(y => y + 1);
+    } else {
+      if (isCurrentPeriod) return;
+      let newMonth = selectedMonth + 1;
+      let newYear = selectedYear;
+      if (newMonth > 12) { newMonth = 1; newYear += 1; }
+      setSelectedYear(newYear);
+      setSelectedMonth(newMonth);
+    }
+    setExpandedCategories(new Set());
+  }, [activeTab, selectedYear, selectedMonth, isCurrentPeriod]);
+
+  const goToCurrentPeriod = useCallback(() => {
+    setSelectedYear(now.getFullYear());
+    setSelectedMonth(now.getMonth() + 1);
+    setExpandedCategories(new Set());
+  }, []);
+
+  const displayPeriod =
+    activeTab === 'annual'
+      ? (selectedYear === now.getFullYear() ? 'This Year' : selectedYear.toString())
+      : (isCurrentPeriod
+          ? 'This Month'
+          : `${monthNamesShort[selectedMonth - 1]} ${selectedYear}`);
+
   const {
     expenses,
     isLoading,
@@ -63,12 +123,15 @@ export const ExpensesScreen: React.FC = () => {
     }
   }, [params.filterSubCategoryId, params.filterCategoryId]);
 
-  // Re-fetch expenses every time the screen gains focus to ensure
-  // deleted/added expenses are reflected immediately
+  // Show full-screen spinner on every focus refresh so stale data is
+  // never visible while new data loads.
+  const [isFocusRefreshing, setIsFocusRefreshing] = useState(true);
+
   useFocusEffect(
     useCallback(() => {
-      fetchAllExpenses();
-      fetchCategories();
+      setIsFocusRefreshing(true);
+      Promise.all([fetchAllExpenses(), fetchCategories()])
+        .finally(() => setIsFocusRefreshing(false));
     }, [fetchAllExpenses, fetchCategories])
   );
 
@@ -77,56 +140,39 @@ export const ExpensesScreen: React.FC = () => {
     return new Set(categories.map(c => c.id));
   }, [categories]);
 
-  // Filter expenses based on active tab:
-  // - Monthly tab: shows expenses from current month for monthly-type expenses
-  // - Annual tab: shows expenses for annual-type expenses only
+  // Filter expenses based on active tab and selected period
   const periodFilteredExpenses = useMemo(() => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
     return expenses.filter(expense => {
       if (!expense.date) return false;
 
       // Exclude expenses whose category has been deleted (soft-deleted)
       if (expense.category?.id && !activeCategoryIds.has(expense.category.id)) return false;
 
-      // Get the expense type (defaults to 'monthly' for backwards compatibility)
-      // Handle case-insensitivity in case backend returns uppercase
-      const rawExpenseType = expense.expenseType;
-      const expenseType = (rawExpenseType || 'monthly').toLowerCase();
+      const expenseType = (expense.expenseType || 'monthly').toLowerCase();
+
+      // Parse date safely to avoid timezone issues
+      const dateParts = expense.date.split('-');
+      let expenseYear: number;
+      let expenseMonth: number; // 0-indexed
+
+      if (dateParts.length >= 3) {
+        expenseYear = parseInt(dateParts[0], 10);
+        expenseMonth = parseInt(dateParts[1], 10) - 1;
+      } else {
+        const d = new Date(expense.date);
+        expenseYear = d.getFullYear();
+        expenseMonth = d.getMonth();
+      }
 
       if (activeTab === 'monthly') {
-        // Monthly tab: show current month expenses for monthly-type expenses
         if (expenseType !== 'monthly') return false;
-
-        // Parse date safely to avoid timezone issues
-        const dateParts = expense.date.split('-');
-        let expenseYear: number;
-        let expenseMonth: number;
-
-        if (dateParts.length >= 3) {
-          expenseYear = parseInt(dateParts[0], 10);
-          expenseMonth = parseInt(dateParts[1], 10) - 1; // JS months are 0-indexed
-        } else {
-          const expenseDate = new Date(expense.date);
-          expenseYear = expenseDate.getFullYear();
-          expenseMonth = expenseDate.getMonth();
-        }
-
-        return expenseMonth === currentMonth && expenseYear === currentYear;
+        return expenseMonth === (selectedMonth - 1) && expenseYear === selectedYear;
       } else {
-        // Annual tab: show only annual-type expenses from current year
         if (expenseType !== 'annual') return false;
-
-        // Parse date to check year
-        const dateParts = expense.date.split('-');
-        const expenseYear = dateParts.length >= 1 ? parseInt(dateParts[0], 10) : new Date(expense.date).getFullYear();
-
-        return expenseYear === currentYear;
+        return expenseYear === selectedYear;
       }
     });
-  }, [expenses, activeTab, activeCategoryIds]);
+  }, [expenses, activeTab, activeCategoryIds, selectedYear, selectedMonth]);
 
   // Group expenses by category → subcategory
   const groupedExpenses = useMemo((): GroupedCategory[] => {
@@ -207,21 +253,25 @@ export const ExpensesScreen: React.FC = () => {
     });
   }, []);
 
-  const handleRefresh = () => {
-    fetchAllExpenses();
-    fetchCategories();
-  };
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([fetchAllExpenses(), fetchCategories()]);
+  }, [fetchAllExpenses, fetchCategories]);
 
   const handleSubCategoryPress = (categoryId: string, subCategoryId: string) => {
+    const periodParams = {
+      period: activeTab,
+      filterYear: selectedYear.toString(),
+      filterMonth: selectedMonth.toString(),
+    };
     if (subCategoryId === 'no-subcategory') {
       router.push({
         pathname: '/expenses-filtered',
-        params: { filterCategoryId: categoryId, period: activeTab },
+        params: { filterCategoryId: categoryId, ...periodParams },
       });
     } else {
       router.push({
         pathname: '/expenses-filtered',
-        params: { filterSubCategoryId: subCategoryId, period: activeTab },
+        params: { filterSubCategoryId: subCategoryId, ...periodParams },
       });
     }
   };
@@ -232,8 +282,8 @@ export const ExpensesScreen: React.FC = () => {
   }, [periodFilteredExpenses]);
 
   const periodLabel = activeTab === 'monthly'
-    ? new Date().toLocaleString('default', { month: 'long', year: 'numeric' })
-    : new Date().getFullYear().toString();
+    ? new Date(selectedYear, selectedMonth - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' })
+    : selectedYear.toString();
 
   const handleExport = useCallback(async (format: ExportFormat) => {
     setIsExporting(true);
@@ -253,7 +303,7 @@ export const ExpensesScreen: React.FC = () => {
     }
   }, [periodFilteredExpenses, activeTab, periodLabel, totalSpent]);
 
-  if (isLoading && expenses.length === 0) {
+  if (isFocusRefreshing) {
     return <LoadingSpinner fullScreen message="Loading expenses..." />;
   }
 
@@ -286,7 +336,7 @@ export const ExpensesScreen: React.FC = () => {
         <View style={styles.tabs}>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'monthly' && styles.tabActive]}
-            onPress={() => setActiveTab('monthly')}
+            onPress={() => { setActiveTab('monthly'); setExpandedCategories(new Set()); }}
           >
             <Text style={[styles.tabText, activeTab === 'monthly' && styles.tabTextActive]}>
               Monthly
@@ -294,11 +344,37 @@ export const ExpensesScreen: React.FC = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'annual' && styles.tabActive]}
-            onPress={() => setActiveTab('annual')}
+            onPress={() => { setActiveTab('annual'); setExpandedCategories(new Set()); }}
           >
             <Text style={[styles.tabText, activeTab === 'annual' && styles.tabTextActive]}>
               Annual
             </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Period Selector */}
+      <View style={[styles.periodSelectorWrapper, isWeb && isWideScreen && styles.webPeriodSelectorWrapper]}>
+        <View style={styles.periodSelector}>
+          <TouchableOpacity
+            onPress={goToPrevious}
+            style={[styles.periodNavButton, isPrevDisabled && styles.periodNavButtonDisabled]}
+            disabled={isPrevDisabled}
+          >
+            <Icon name="chevron-back" size={22} color={isPrevDisabled ? colors.textLight : colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={goToCurrentPeriod} style={styles.periodDisplay}>
+            <Text style={styles.periodDisplayText}>{displayPeriod}</Text>
+            {(activeTab === 'annual' ? selectedYear !== now.getFullYear() : !isCurrentPeriod) && (
+              <Text style={styles.periodHint}>Tap to return to current</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={goToNext}
+            style={[styles.periodNavButton, isNextDisabled && styles.periodNavButtonDisabled]}
+            disabled={isNextDisabled}
+          >
+            <Icon name="chevron-forward" size={22} color={isNextDisabled ? colors.textLight : colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -313,7 +389,7 @@ export const ExpensesScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={isLoading}
+            refreshing={isLoading && !isFocusRefreshing}
             onRefresh={handleRefresh}
             colors={[colors.primary]}
             tintColor={colors.primary}
@@ -424,7 +500,13 @@ export const ExpensesScreen: React.FC = () => {
       {/* FAB */}
       <TouchableOpacity
         style={[styles.fab, isWeb && isWideScreen && styles.webFab]}
-        onPress={() => router.push('/add-expense')}
+        onPress={() => router.push({
+          pathname: '/add-expense',
+          params: {
+            presetYear: selectedYear.toString(),
+            presetMonth: selectedMonth.toString(),
+          },
+        })}
       >
         <Icon name="add" size={28} color={colors.surface} />
       </TouchableOpacity>
@@ -518,6 +600,48 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: colors.surface,
     fontWeight: '600',
+  },
+  // Period Selector
+  periodSelectorWrapper: {
+    paddingHorizontal: 24,
+    marginBottom: 16,
+  },
+  webPeriodSelectorWrapper: {
+    alignItems: 'center',
+  },
+  periodSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: 1200,
+  },
+  periodNavButton: {
+    padding: 8,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+  },
+  periodNavButtonDisabled: {
+    opacity: 0.4,
+  },
+  periodDisplay: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginHorizontal: 8,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+  },
+  periodDisplayText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  periodHint: {
+    fontSize: 11,
+    color: colors.primary,
+    marginTop: 2,
   },
   // ScrollView
   scrollView: {

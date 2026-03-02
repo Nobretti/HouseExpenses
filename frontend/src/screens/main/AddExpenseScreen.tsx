@@ -25,6 +25,8 @@ export const AddExpenseScreen: React.FC = () => {
     presetAmount?: string;
     presetIsFixed?: string;
     presetExpenseType?: string;
+    presetYear?: string;
+    presetMonth?: string;
   }>();
   const { addExpense, isLoading } = useExpenseStore();
   const { categories, fetchCategories } = useCategoryStore();
@@ -33,11 +35,23 @@ export const AddExpenseScreen: React.FC = () => {
   const hasPreset = !!params.presetSubCategoryId;
   const isFixedExpense = params.presetIsFixed === 'true';
 
+  // Determine expense date: use first day of the preset period if provided
+  const presetDate = (() => {
+    if (params.presetYear && params.presetMonth) {
+      return new Date(parseInt(params.presetYear), parseInt(params.presetMonth) - 1, 1);
+    }
+    return null;
+  })();
+  const now = new Date();
+  const isHistoricalPeriod =
+    presetDate !== null &&
+    !(presetDate.getFullYear() === now.getFullYear() && presetDate.getMonth() === now.getMonth());
+
   const [amount, setAmount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(presetDate ?? new Date());
   const [expenseType, setExpenseType] = useState<ExpenseType>((params.presetExpenseType as ExpenseType) || 'monthly');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' as 'success' | 'error' });
@@ -127,6 +141,17 @@ export const AddExpenseScreen: React.FC = () => {
               {isFixedExpense
                 ? `Fixed expense: ${selectedSubCategory?.name}`
                 : `Adding expense for: ${selectedSubCategory?.name}`}
+            </Text>
+          </View>
+        )}
+
+        {/* Historical Period Notice */}
+        {isHistoricalPeriod && (
+          <View style={styles.historicalNotice}>
+            <Icon name="time-outline" size={18} color={colors.warning} />
+            <Text style={styles.historicalNoticeText}>
+              Recording for{' '}
+              {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
             </Text>
           </View>
         )}
@@ -475,11 +500,26 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.primary}15`,
     borderRadius: 12,
     padding: 14,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   presetNoticeText: {
     fontSize: 14,
     color: colors.primary,
+    fontWeight: '500',
+    marginLeft: 10,
+    flex: 1,
+  },
+  historicalNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${colors.warning}15`,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 20,
+  },
+  historicalNoticeText: {
+    fontSize: 14,
+    color: colors.warning,
     fontWeight: '500',
     marginLeft: 10,
     flex: 1,
